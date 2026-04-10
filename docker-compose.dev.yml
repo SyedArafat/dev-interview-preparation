@@ -1,0 +1,23 @@
+# ──────────────────────────────────────────────────
+# DEVELOPMENT  — docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+# Overrides the base compose to use the 'development'
+# build target with hot-reload via volume mounts.
+# ──────────────────────────────────────────────────
+
+services:
+  client:
+    image: ${COMPOSE_CLIENT_PROJECT_NAME:-interview-questions}_app:${DOCKER_BUILD_MODE:-development}
+    build:
+      target: development
+    container_name: ${COMPOSE_CLIENT_PROJECT_NAME:-interview-questions}-dev
+    ports:
+      - "${WEB_HTTP_PUBLISH_PORT:-3000}:3000"
+    volumes:
+      # Mount source & public for hot-module replacement
+      - ./${DOCKER_VOLUME_CLIENT_ROOT_DIR:-client/}src:/app/src
+      - ./${DOCKER_VOLUME_CLIENT_ROOT_DIR:-client/}public:/app/public
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    restart: unless-stopped
+
