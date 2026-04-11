@@ -22,10 +22,9 @@
 .topic-card:hover,
 .topic-card:focus-visible {
   background: var(--bg-card-hover);
-  border-color: rgba(var(--topic-color, 99 102 241), 0.35);
-  border-color: color-mix(in srgb, var(--topic-color) 35%, transparent);
+  border-color: color-mix(in srgb, var(--topic-color) 40%, transparent);
   transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255,255,255,0.04);
+  box-shadow: var(--shadow-hover);
   outline: none;
 }
 
@@ -46,20 +45,22 @@
   opacity: 1;
 }
 
-/* Icon */
+/* Icon — use border instead of hardcoded rgba */
 .topic-card__icon-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 64px;
   height: 64px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-tag);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  transition: background var(--transition);
+  transition: background var(--transition), border-color var(--transition);
 }
 
 .topic-card:hover .topic-card__icon-wrap {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--bg-card-hover);
+  border-color: color-mix(in srgb, var(--topic-color) 30%, transparent);
 }
 
 .topic-card__icon {
@@ -99,7 +100,7 @@
 .topic-card__progress-track {
   flex: 1;
   height: 3px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border-hover);
   border-radius: var(--radius-full);
   overflow: hidden;
 }
@@ -117,4 +118,3 @@
   font-weight: 600;
   white-space: nowrap;
 }
-
