@@ -1,23 +1,34 @@
-# ──────────────────────────────────────────────────
-# DEVELOPMENT  — docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
-# Overrides the base compose to use the 'development'
-# build target with hot-reload via volume mounts.
-# ──────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────
+# DEVELOPMENT override
+# Set COMPOSE_FILE=docker-compose.yml:docker-compose.dev.yml in .env
+# Then just:  docker compose up --build
+# ──────────────────────────────────────────────────────────────────
 
 services:
   client:
+    # Override the image tag and the FULL build config (not a partial
+    # merge — some Compose versions don't reliably inherit build.target
+    # when only one nested key is specified in the override file).
     image: ${COMPOSE_CLIENT_PROJECT_NAME:-interview-questions}_app:${DOCKER_BUILD_MODE:-development}
     build:
-      target: development
+      context: ${DOCKER_BUILD_CONTEXT_DIR:-.}
+      dockerfile: ./docker/client/Dockerfile
+      target: development          # ← stops at the dev stage, skips build+nginx
+      args:
+        FE_FOLDER: ${DOCKER_VOLUME_CLIENT_ROOT_DIR:-client/}
     container_name: ${COMPOSE_CLIENT_PROJECT_NAME:-interview-questions}-dev
     ports:
       - "${WEB_HTTP_PUBLISH_PORT:-3000}:3000"
     volumes:
-      # Mount source & public for hot-module replacement
-      - ./${DOCKER_VOLUME_CLIENT_ROOT_DIR:-client/}src:/app/src
-      - ./${DOCKER_VOLUME_CLIENT_ROOT_DIR:-client/}public:/app/public
+      # Mount entire client folder — Vite watches all files (src, public,
+      # index.html, vite.config.js, …) for hot-module replacement.
+      - ./${DOCKER_VOLUME_CLIENT_ROOT_DIR:-client/}:/app
+      # Anonymous volume keeps the container's node_modules intact so
+      # the host's node_modules directory never shadows the Linux deps.
+      - /app/node_modules
     environment:
       - NODE_ENV=development
-      - CHOKIDAR_USEPOLLING=true
+      - DOCKER=true               # activates usePolling in vite.config.js
+      - CHOKIDAR_USEPOLLING=true  # belt-and-suspenders fallback
     restart: unless-stopped
 

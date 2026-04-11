@@ -1,0 +1,119 @@
+.topic-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px 18px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
+  user-select: none;
+}
+
+.topic-card:hover,
+.topic-card:focus-visible {
+  background: var(--bg-card-hover);
+  border-color: rgba(var(--topic-color, 99 102 241), 0.35);
+  border-color: color-mix(in srgb, var(--topic-color) 35%, transparent);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255,255,255,0.04);
+  outline: none;
+}
+
+/* Coloured accent bar on top */
+.topic-card__accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--topic-color, var(--accent));
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.topic-card:hover .topic-card__accent,
+.topic-card--started .topic-card__accent {
+  opacity: 1;
+}
+
+/* Icon */
+.topic-card__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius);
+  transition: background var(--transition);
+}
+
+.topic-card:hover .topic-card__icon-wrap {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.topic-card__icon {
+  font-size: 38px;
+  color: var(--topic-color, #e2e8f0);
+}
+
+/* Info */
+.topic-card__info {
+  text-align: center;
+  width: 100%;
+}
+
+.topic-card__name {
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+  line-height: 1.3;
+}
+
+.topic-card__count {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* Progress */
+.topic-card__progress {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.topic-card__progress-track {
+  flex: 1;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.topic-card__progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+.topic-card__progress-label {
+  font-size: 0.72rem;
+  color: var(--green);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
