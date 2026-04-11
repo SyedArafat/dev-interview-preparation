@@ -30,5 +30,6 @@ services:
       - NODE_ENV=development
       - DOCKER=true               # activates usePolling in vite.config.js
       - CHOKIDAR_USEPOLLING=true  # belt-and-suspenders fallback
+      - HMR_PORT=${WEB_HTTP_PUBLISH_PORT:-4444}  # tells Vite which port the browser uses
     restart: unless-stopped
 
