@@ -130,9 +130,19 @@
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
 }
 
-/* ── Mobile ───────────────────────────────────────── */
+/* ── Mobile ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .header__btn-signin { display: none; }
+}
+
 @media (max-width: 480px) {
   .header__logo-text { font-size: 0.9rem; }
-  .header__btn-signin { display: none; }
   .header__nav-link span { display: none; }
+  .header__btn-pro { padding: 6px 13px; font-size: 0.8rem; }
+}
+
+@media (max-width: 380px) {
+  .header__logo-text { display: none; }
+  .header__btn-pro   { display: none; }
+  .header__inner     { height: 56px; }
 }
