@@ -1,11 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Dev Interview Preparation – practice 500+ curated interview questions across 26 topics" />
     <title>Dev Interview Preparation</title>
+    <!-- Prevent flash of wrong theme — runs before React hydrates -->
+    <script>
+      (function () {
+        var saved = localStorage.getItem('dip_theme');
+        var preferred = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', preferred);
+      })();
+    </script>
     <!-- Tech brand icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/devicon.min.css" />
     <!-- Typography -->

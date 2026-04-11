@@ -4,6 +4,10 @@ import react from '@vitejs/plugin-react'
 // True only when started inside the Docker container (set via docker-compose env)
 const isDocker = process.env.DOCKER === 'true'
 
+// Port where the dev server will be exposed (inside container always 3000, but
+// the host port can be different — read from HMR_PORT env or default to 4444)
+const hmrPort = parseInt(process.env.HMR_PORT || '4444', 10)
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -16,7 +20,7 @@ export default defineConfig({
       // the WebSocket. Without this, Vite derives the host from the server's
       // bind address (0.0.0.0 / container IP) — unreachable from the browser.
       host: 'localhost',
-      clientPort: 3000,
+      clientPort: hmrPort,
     },
     watch: {
       // Polling is only needed inside Docker — macOS inotify events don't

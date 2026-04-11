@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { Sun, Moon } from 'lucide-react'
+import { useTheme } from '../hooks/useTheme'
 import './Header.css'
 
 // Simple GitHub mark SVG (no external dependency)
@@ -11,6 +13,8 @@ function GitHubIcon() {
 }
 
 function Header() {
+  const { theme, toggleTheme } = useTheme()
+
   return (
     <header className="header">
       <div className="header__inner container">
@@ -31,8 +35,22 @@ function Header() {
             className="header__nav-link"
           >
             <GitHubIcon />
-            GitHub
+            <span>GitHub</span>
           </a>
+
+          {/* Theme Toggle */}
+          <button
+            className="header__theme-toggle"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          >
+            {theme === 'dark'
+              ? <Sun size={17} />
+              : <Moon size={17} />
+            }
+          </button>
+
           <button className="header__btn-signin">Sign In</button>
           <button className="header__btn-pro">Get Pro</button>
         </nav>
@@ -42,4 +60,3 @@ function Header() {
 }
 
 export default Header
-

@@ -10,6 +10,7 @@
   align-items: center;
   gap: 12px;
   overflow: hidden;
+  box-shadow: var(--shadow-card);
   transition:
     background var(--transition),
     border-color var(--transition),

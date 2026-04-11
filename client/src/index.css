@@ -6,8 +6,9 @@ a { text-decoration: none; color: inherit; }
 ul, ol { list-style: none; }
 input, textarea { font-family: inherit; }
 
-/* ── Theme Tokens ──────────────────────────────────────── */
-:root {
+/* ── Dark Theme (default) ──────────────────────────────── */
+:root,
+[data-theme="dark"] {
   --bg-page:        #060d1f;
   --bg-nav:         #08112b;
   --bg-card:        #0d1526;
@@ -31,20 +32,65 @@ input, textarea { font-family: inherit; }
   --green-dim:      rgba(16, 185, 129, 0.12);
   --yellow:         #f59e0b;
 
+  --shadow-card:    0 1px 3px rgba(0, 0, 0, 0.6);
+  --shadow-hover:   0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  --code-bg:        #0b1628;
+  --code-text:      #a8d8ea;
+  --code-inline-bg: #131f38;
+  --code-inline-text: #a5d6fb;
+}
+
+/* ── Light Theme ───────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-page:        #f4f6fb;
+  --bg-nav:         #ffffff;
+  --bg-card:        #ffffff;
+  --bg-card-hover:  #f0f4ff;
+  --bg-input:       #f1f5f9;
+  --bg-tag:         #e8edf7;
+
+  --border:         rgba(0, 0, 0, 0.08);
+  --border-hover:   rgba(0, 0, 0, 0.16);
+  --border-active:  rgba(99, 102, 241, 0.45);
+
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+
+  --accent:         #6366f1;
+  --accent-hover:   #4f46e5;
+  --accent-dim:     rgba(99, 102, 241, 0.1);
+
+  --green:          #059669;
+  --green-dim:      rgba(5, 150, 105, 0.1);
+  --yellow:         #d97706;
+
+  --shadow-card:    0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-hover:   0 10px 30px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+
+  --code-bg:        #f1f5f9;
+  --code-text:      #1e3a5f;
+  --code-inline-bg: #e8eef8;
+  --code-inline-text: #3730a3;
+}
+
+/* ── Shared Tokens ─────────────────────────────────────── */
+:root {
   --radius-sm:      6px;
   --radius:         10px;
   --radius-lg:      16px;
   --radius-full:    9999px;
-
-  --shadow-card:    0 1px 3px rgba(0, 0, 0, 0.6);
-  --shadow-hover:   0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
-
   --transition:     0.18s ease;
   --font:           'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* ── Base ──────────────────────────────────────────────── */
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* Smooth theme switching */
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
 
 body {
   font-family: var(--font);
@@ -54,13 +100,14 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* ── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-page); }
-::-webkit-scrollbar-thumb { background: #1e2d4a; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #2a3f66; }
+::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
 /* ── Typography ────────────────────────────────────────── */
 h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; color: var(--text-primary); }
@@ -86,15 +133,15 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; color: var(--text-primary);
 .answer-body h3, .answer-body h4 { color: var(--text-primary); margin: 16px 0 8px; }
 .answer-body a { color: var(--accent-hover); text-decoration: underline; }
 .answer-body code {
-  background: #131f38;
-  color: #a5d6fb;
+  background: var(--code-inline-bg);
+  color: var(--code-inline-text);
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 0.875em;
   font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace;
 }
 .answer-body pre {
-  background: #0b1628;
+  background: var(--code-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 16px;
@@ -104,7 +151,7 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; color: var(--text-primary);
 .answer-body pre code {
   background: none;
   padding: 0;
-  color: #a8d8ea;
+  color: var(--code-text);
   font-size: 0.875rem;
   line-height: 1.7;
 }
@@ -114,3 +161,24 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; color: var(--text-primary);
   color: var(--text-secondary);
   margin: 12px 0;
 }
+.answer-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 0.875rem;
+}
+.answer-body th, .answer-body td {
+  padding: 8px 12px;
+  text-align: left;
+  border: 1px solid var(--border);
+}
+.answer-body th {
+  background: var(--bg-tag);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.answer-body tr:nth-child(even) td {
+  background: rgba(99, 102, 241, 0.03);
+}
+
+
