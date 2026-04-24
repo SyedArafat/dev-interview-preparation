@@ -2,21 +2,24 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import { Search, BookOpen, Code2, Award, TrendingUp } from 'lucide-react'
 import Header from '../components/Header'
 import TopicCard from '../components/TopicCard'
-import { topics, categories } from '../data/topics'
-import questionsData from '../data/questions'
+import { categories } from '../data/topics'
+import { useTopics } from '../hooks/useTopics'
 import { useProgress } from '../hooks/useProgress'
 import './HomePage.css'
-
-const TOTAL_QUESTIONS = Object.values(questionsData).reduce(
-  (sum, arr) => sum + arr.length,
-  0,
-)
 
 function HomePage() {
   const [activeCategory, setActiveCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const searchRef = useRef(null)
   const { getTopicProgress, progress } = useProgress()
+  const { topics, loading: topicsLoading, error: topicsError } = useTopics()
+
+  console.log('HomePage - topics:', topics, 'loading:', topicsLoading, 'error:', topicsError)
+
+  const TOTAL_QUESTIONS = useMemo(
+    () => topics.reduce((sum, t) => sum + (t.questionsCount || 0), 0),
+    [topics],
+  )
 
   // ⌘K / Ctrl+K focuses the search bar
   useEffect(() => {
@@ -44,7 +47,9 @@ function HomePage() {
 
   // Overall progress across all topics
   const totalDone = useMemo(() => Object.keys(progress).length, [progress])
-  const overallPct = Math.round((totalDone / TOTAL_QUESTIONS) * 100)
+  const overallPct = TOTAL_QUESTIONS > 0
+    ? Math.round((totalDone / TOTAL_QUESTIONS) * 100)
+    : 0
 
   const isMac = navigator.platform?.toUpperCase().includes('MAC')
 
@@ -175,17 +180,20 @@ function HomePage() {
         </div>
 
         {/* Grid */}
-        {filteredTopics.length > 0 ? (
+        {topicsLoading ? (
+          <div className="topics-loading">Loading topics…</div>
+        ) : topicsError ? (
+          <div className="topics-error">Failed to load topics. Please try again.</div>
+        ) : filteredTopics.length > 0 ? (
           <div className="topics-grid">
             {filteredTopics.map((topic) => {
-              const qs = questionsData[topic.id] || []
-              const { done, total } = getTopicProgress(qs)
+              const { done, total } = getTopicProgress([], topic)
               return (
                 <TopicCard
                   key={topic.id}
                   topic={topic}
                   done={done}
-                  total={total}
+                  total={topic.questionsCount || 0}
                 />
               )
             })}

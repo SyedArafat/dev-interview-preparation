@@ -6,8 +6,8 @@ import {
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import Header from '../components/Header'
-import { topics } from '../data/topics'
-import questionsData from '../data/questions'
+import { useTopics } from '../hooks/useTopics'
+import { useQuestions } from '../hooks/useQuestions'
 import { useProgress } from '../hooks/useProgress'
 import './TopicPage.css'
 
@@ -112,12 +112,13 @@ function TopicPage() {
   const { topicId }   = useParams()
   const navigate      = useNavigate()
   const { isRead, toggleRead, getTopicProgress } = useProgress()
+  const { topics } = useTopics()
+  const { questions, loading: questionsLoading, error: questionsError } = useQuestions(topicId)
 
   const [search,     setSearch]     = useState('')
   const [diffFilter, setDiffFilter] = useState('all')
 
   const topic     = topics.find(t => t.id === topicId)
-  const questions = questionsData[topicId] || []
   const { done, total } = getTopicProgress(questions)
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
 
@@ -272,7 +273,11 @@ function TopicPage() {
 
         {/* ── Questions ───────────────────────────────── */}
         <section className="questions-list" aria-label="Questions">
-          {filtered.length === 0 ? (
+          {questionsLoading ? (
+            <div className="q-loading">Loading questions…</div>
+          ) : questionsError ? (
+            <div className="q-error">Failed to load questions. Please try again.</div>
+          ) : filtered.length === 0 ? (
             <div className="q-empty">
               <div className="q-empty__icon"><Search size={26} /></div>
               <p className="q-empty__title">No questions match</p>

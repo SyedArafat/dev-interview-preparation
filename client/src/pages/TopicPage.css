@@ -673,3 +673,17 @@
 
   .q-meta-row { flex-wrap: wrap; gap: 6px; }
 }
+
+
+/* ── Loading / Error States ────────────────────────── */
+.q-loading,
+.q-error {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.q-error {
+  color: var(--error, #ef4444);
+}

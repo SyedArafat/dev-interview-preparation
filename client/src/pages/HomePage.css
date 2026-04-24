@@ -478,3 +478,17 @@
 
   .category-tab { padding: 6px 10px; font-size: 0.78rem; }
 }
+
+
+/* ── Loading / Error States ────────────────────────── */
+.topics-loading,
+.topics-error {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.topics-error {
+  color: var(--error, #ef4444);
+}
