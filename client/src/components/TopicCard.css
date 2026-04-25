@@ -1,137 +1,210 @@
-.topic-card {
+/* ══════════════════════════════════════════════════════
+   TopicCard  ·  Modern professional card
+   Inspired by Linear / Vercel / Stripe
+   Hover: shadow lift + subtle tint — NO heavy borders
+   ══════════════════════════════════════════════════════ */
+
+.tc {
+  --tc: var(--accent);
   position: relative;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px 20px 18px;
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
-  transition:
-    background var(--transition),
-    border-color var(--transition),
-    transform var(--transition),
-    box-shadow var(--transition);
-  user-select: none;
-}
-
-.topic-card:hover,
-.topic-card:focus-visible {
-  background: var(--bg-card-hover);
-  border-color: color-mix(in srgb, var(--topic-color) 40%, transparent);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-hover);
+  justify-content: center;
+  text-align: center;
+  padding: 22px 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
   outline: none;
+  user-select: none;
+  overflow: hidden;
+  /* Elevation layer 1 */
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.04),
+    0 2px 4px rgba(0,0,0,0.04);
+  transition:
+    transform      0.25s cubic-bezier(.22,.68,0,1.2),
+    box-shadow     0.25s ease,
+    border-color   0.25s ease,
+    background     0.25s ease;
+  will-change: transform;
 }
 
-/* Coloured accent bar on top */
-.topic-card__accent {
+/* ── HOVER — restrained, high-quality lift ───────────── */
+.tc:hover,
+.tc:focus-visible {
+  border-color: var(--border-hover);
+  transform: translateY(-4px);
+  /* Neutral shadow — professional, no color bleed */
+  box-shadow:
+    0 0 0 1px var(--border-hover),
+    0 4px 8px rgba(0,0,0,0.06),
+    0 12px 24px rgba(0,0,0,0.08),
+    0 20px 40px rgba(0,0,0,0.06);
+  /* Very subtle topic-colour bg tint — professional */
+  background: color-mix(in srgb, var(--tc) 4%, var(--bg-card));
+}
+
+[data-theme="light"] .tc:hover {
+  background: color-mix(in srgb, var(--tc) 3%, #ffffff);
+  box-shadow:
+    0 0 0 1px var(--border-hover),
+    0 4px 8px rgba(0,0,0,0.05),
+    0 12px 28px rgba(0,0,0,0.09),
+    0 24px 48px rgba(0,0,0,0.05);
+}
+
+/* ── Coloured top bar — only decoration on hover ─────── */
+.tc__bar {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   height: 2px;
-  background: var(--topic-color, var(--accent));
+  background: linear-gradient(90deg, var(--tc), color-mix(in srgb, var(--tc) 60%, #a78bfa));
   opacity: 0;
-  transition: opacity var(--transition);
+  border-radius: 14px 14px 0 0;
+  transition: opacity 0.25s ease;
 }
+.tc:hover .tc__bar,
+.tc--started .tc__bar { opacity: 1; }
 
-.topic-card:hover .topic-card__accent,
-.topic-card--started .topic-card__accent {
-  opacity: 1;
+/* ── Ambient inner glow — very subtle ───────────────── */
+.tc__glow {
+  position: absolute;
+  inset: -60%;
+  background: radial-gradient(circle at 50% -20%, var(--tc), transparent 64%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
 }
+.tc:hover .tc__glow { opacity: 0.06; }
 
-/* Icon — use border instead of hardcoded rgba */
-.topic-card__icon-wrap {
+/* ── Icon ───────────────────────────────────────────── */
+.tc__icon {
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
+  border-radius: 13px;
   background: var(--bg-tag);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  transition: background var(--transition), border-color var(--transition);
+  margin-bottom: 11px;
+  transition:
+    background    0.25s ease,
+    border-color  0.25s ease,
+    transform     0.25s cubic-bezier(.22,.68,0,1.2);
+  position: relative;
+  z-index: 1;
 }
 
-.topic-card:hover .topic-card__icon-wrap {
-  background: var(--bg-card-hover);
-  border-color: color-mix(in srgb, var(--topic-color) 30%, transparent);
+/* Icon: tinted bg + subtle lift — no glow ring */
+.tc:hover .tc__icon {
+  background: color-mix(in srgb, var(--tc) 10%, var(--bg-tag));
+  border-color: color-mix(in srgb, var(--tc) 30%, var(--border));
+  transform: scale(1.06) translateY(-1px);
 }
 
-.topic-card__icon {
-  font-size: 38px;
-  color: var(--topic-color, #e2e8f0);
+.tc__devicon {
+  font-size: 30px;
+  color: var(--tc);
+  line-height: 1;
 }
 
-/* Info */
-.topic-card__info {
-  text-align: center;
-  width: 100%;
-}
-
-.topic-card__name {
-  font-size: 0.925rem;
+/* ── Name ───────────────────────────────────────────── */
+.tc__name {
+  font-size: 0.83rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 3px;
-  line-height: 1.3;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  position: relative;
+  z-index: 1;
+  transition: color 0.2s ease;
 }
 
-.topic-card__count {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  font-weight: 400;
+.tc:hover .tc__name {
+  color: color-mix(in srgb, var(--tc) 70%, var(--text-primary));
 }
 
-/* Progress */
-.topic-card__progress {
-  width: 100%;
+/* ── Arrow — minimal, top-right ─────────────────────── */
+.tc__arrow {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 18px; height: 18px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 4px;
+  justify-content: center;
+  border-radius: 5px;
+  color: var(--text-muted);
+  opacity: 0;
+  transform: translate(-3px, 3px);
+  transition: all 0.22s ease;
+  z-index: 2;
 }
 
-.topic-card__progress-track {
-  flex: 1;
-  height: 3px;
-  background: var(--border-hover);
-  border-radius: var(--radius-full);
+.tc:hover .tc__arrow {
+  opacity: 0.85;
+  transform: translate(0, 0);
+  color: var(--text-secondary);
+}
+
+/* ── Progress bar ───────────────────────────────────── */
+.tc__progress {
+  width: 100%;
+  margin-top: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.tc__progress-track {
+  height: 2px;
+  background: var(--border);
+  border-radius: 9999px;
   overflow: hidden;
 }
 
-.topic-card__progress-fill {
+.tc__progress-fill {
   height: 100%;
-  background: var(--green);
-  border-radius: var(--radius-full);
-  transition: width 0.4s ease;
+  background: linear-gradient(90deg, var(--green), #34d399);
+  border-radius: 9999px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
 }
 
-.topic-card__progress-label {
-  font-size: 0.72rem;
-  color: var(--green);
-  font-weight: 600;
-  white-space: nowrap;
-}
+/* ══════════════════════════════════════════════════════
+   Responsive
+   ══════════════════════════════════════════════════════ */
 
-/* ── Responsive ──────────────────────────────────────── */
-@media (max-width: 480px) {
-  .topic-card { padding: 18px 14px 14px; gap: 10px; }
-  .topic-card__icon-wrap { width: 52px; height: 52px; }
-  .topic-card__icon { font-size: 30px; }
-  .topic-card__name { font-size: 0.875rem; }
-  .topic-card__count { font-size: 0.74rem; }
+@media (max-width: 640px) {
+  .tc { padding: 18px 11px 15px; border-radius: 12px; }
+  .tc__icon { width: 46px; height: 46px; border-radius: 12px; margin-bottom: 9px; }
+  .tc__devicon { font-size: 27px; }
+  .tc__name { font-size: 0.79rem; }
 }
 
 @media (max-width: 380px) {
-  .topic-card { padding: 14px 10px 12px; gap: 8px; }
-  .topic-card__icon-wrap { width: 46px; height: 46px; }
-  .topic-card__icon { font-size: 26px; }
-  .topic-card__name { font-size: 0.83rem; }
+  .tc { padding: 14px 9px 13px; border-radius: 11px; }
+  .tc__icon { width: 42px; height: 42px; border-radius: 11px; margin-bottom: 8px; }
+  .tc__devicon { font-size: 24px; }
+  .tc__name { font-size: 0.75rem; }
+  .tc__arrow { display: none; }
 }
 
+/* Touch — press feedback only, no hover artifacts */
+@media (hover: none) {
+  .tc:hover {
+    transform: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
+    border-color: var(--border);
+    background: var(--bg-card);
+  }
+  .tc:active { transform: scale(0.96); opacity: 0.9; }
+  .tc:hover .tc__bar  { opacity: 0; }
+  .tc:hover .tc__glow { opacity: 0; }
+  .tc:hover .tc__icon { background: var(--bg-tag); border-color: var(--border); transform: none; }
+  .tc:hover .tc__name { color: var(--text-primary); }
+  .tc:hover .tc__arrow { opacity: 0; }
+  .tc--started .tc__bar { opacity: 1; }
+}

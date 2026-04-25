@@ -11,7 +11,7 @@ import { useQuestions } from '../hooks/useQuestions'
 import { useProgress } from '../hooks/useProgress'
 import './TopicPage.css'
 
-/* ── Constants ───────────────────────────────────────── */
+/* ── Answer body ─────────────────────────────────────── */
 const DIFFICULTY = {
   beginner:     { label: 'Beginner',     cls: 'diff--beginner' },
   intermediate: { label: 'Intermediate', cls: 'diff--intermediate' },

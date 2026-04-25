@@ -10,7 +10,7 @@ input, textarea { font-family: inherit; }
 :root,
 [data-theme="dark"] {
   --bg-page:        #060d1f;
-  --bg-nav:         #08112b;
+  --bg-nav:         rgba(6, 13, 31, 0.85);
   --bg-card:        #0d1526;
   --bg-card-hover:  #121d35;
   --bg-input:       #0d1526;
@@ -20,7 +20,7 @@ input, textarea { font-family: inherit; }
   --border-hover:   rgba(255, 255, 255, 0.14);
   --border-active:  rgba(99, 102, 241, 0.5);
 
-  --text-primary:   #e8edf5;
+  --text-primary:   #f1f5f9;
   --text-secondary: #8b9ab5;
   --text-muted:     #4a5568;
 
@@ -33,7 +33,7 @@ input, textarea { font-family: inherit; }
   --yellow:         #f59e0b;
 
   --shadow-card:    0 1px 3px rgba(0, 0, 0, 0.6);
-  --shadow-hover:   0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-hover:   0 12px 40px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
 
   --code-bg:        #0b1628;
   --code-text:      #a8d8ea;
@@ -43,15 +43,15 @@ input, textarea { font-family: inherit; }
 
 /* ── Light Theme ───────────────────────────────────────── */
 [data-theme="light"] {
-  --bg-page:        #f4f6fb;
-  --bg-nav:         #ffffff;
+  --bg-page:        #f1f5fb;
+  --bg-nav:         rgba(255, 255, 255, 0.9);
   --bg-card:        #ffffff;
-  --bg-card-hover:  #f0f4ff;
-  --bg-input:       #f1f5f9;
-  --bg-tag:         #e8edf7;
+  --bg-card-hover:  #f4f7ff;
+  --bg-input:       #f8fafc;
+  --bg-tag:         #eef2f9;
 
   --border:         rgba(0, 0, 0, 0.08);
-  --border-hover:   rgba(0, 0, 0, 0.16);
+  --border-hover:   rgba(0, 0, 0, 0.15);
   --border-active:  rgba(99, 102, 241, 0.45);
 
   --text-primary:   #0f172a;
@@ -66,8 +66,8 @@ input, textarea { font-family: inherit; }
   --green-dim:      rgba(5, 150, 105, 0.1);
   --yellow:         #d97706;
 
-  --shadow-card:    0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-hover:   0 10px 30px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --shadow-card:    0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-hover:   0 10px 30px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06);
 
   --code-bg:        #f1f5f9;
   --code-text:      #1e3a5f;
@@ -77,18 +77,20 @@ input, textarea { font-family: inherit; }
 
 /* ── Shared Tokens ─────────────────────────────────────── */
 :root {
-  --radius-sm:      6px;
-  --radius:         10px;
-  --radius-lg:      16px;
-  --radius-full:    9999px;
-  --transition:     0.18s ease;
-  --font:           'Inter', system-ui, -apple-system, sans-serif;
+  --radius-sm:   6px;
+  --radius:      12px;
+  --radius-lg:   18px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+  --transition:  0.18s ease;
+  --topic-color: var(--accent);
+  --font:        'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono:   'Fira Code', 'Cascadia Code', Consolas, monospace;
 }
 
 /* ── Base ──────────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
-  /* Smooth theme switching */
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
@@ -117,11 +119,12 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; color: var(--text-primary);
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 28px;
 }
 
-@media (max-width: 640px)  { .container { padding: 0 16px; } }
-@media (max-width: 380px)  { .container { padding: 0 12px; } }
+@media (max-width: 768px) { .container { padding: 0 20px; } }
+@media (max-width: 480px) { .container { padding: 0 16px; } }
+@media (max-width: 380px) { .container { padding: 0 12px; } }
 
 /* ── React Markdown rendered answers ──────────────────── */
 .answer-body { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.75; }
@@ -141,7 +144,7 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; color: var(--text-primary);
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 0.875em;
-  font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+  font-family: var(--font-mono);
 }
 .answer-body pre {
   background: var(--code-bg);
@@ -181,7 +184,5 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; color: var(--text-primary);
   font-weight: 600;
 }
 .answer-body tr:nth-child(even) td {
-  background: rgba(99, 102, 241, 0.03);
+  background: rgba(99, 102, 241, 0.04);
 }
-
-

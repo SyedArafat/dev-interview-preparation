@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
-import { Search, BookOpen, Code2, Award, TrendingUp } from 'lucide-react'
+import { Search, BookOpen, Zap, TrendingUp, Sparkles, X } from 'lucide-react'
 import Header from '../components/Header'
 import TopicCard from '../components/TopicCard'
 import { categories } from '../data/topics'
@@ -7,21 +7,30 @@ import { useTopics } from '../hooks/useTopics'
 import { useProgress } from '../hooks/useProgress'
 import './HomePage.css'
 
+/* ── Skeleton card (loading placeholder) ──────────── */
+function SkeletonCard() {
+  return (
+    <div className="skeleton-card" aria-hidden="true">
+      <div className="skeleton-card__icon" />
+      <div className="skeleton-card__line skeleton-card__line--title" />
+      <div className="skeleton-card__line skeleton-card__line--sub" />
+    </div>
+  )
+}
+
 function HomePage() {
   const [activeCategory, setActiveCategory] = useState('all')
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery]       = useState('')
   const searchRef = useRef(null)
   const { getTopicProgress, progress } = useProgress()
   const { topics, loading: topicsLoading, error: topicsError } = useTopics()
-
-  console.log('HomePage - topics:', topics, 'loading:', topicsLoading, 'error:', topicsError)
 
   const TOTAL_QUESTIONS = useMemo(
     () => topics.reduce((sum, t) => sum + (t.questionsCount || 0), 0),
     [topics],
   )
 
-  // ⌘K / Ctrl+K focuses the search bar
+  /* ⌘K / Ctrl+K → focus search */
   useEffect(() => {
     const handler = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -34,13 +43,8 @@ function HomePage() {
   }, [])
 
   const filteredTopics = useMemo(() => {
-    console.log('Filtering topics:', { topics, activeCategory, searchQuery })
     return topics
-      .filter((t) => {
-        // If activeCategory is 'all', show all. Otherwise filter by category if it exists
-        if (activeCategory === 'all') return true
-        return (t.category || 'other') === activeCategory
-      })
+      .filter((t) => activeCategory === 'all' || (t.category || 'other') === activeCategory)
       .filter((t) =>
         searchQuery.trim()
           ? t.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -48,11 +52,9 @@ function HomePage() {
       )
   }, [topics, activeCategory, searchQuery])
 
-  // Overall progress across all topics
-  const totalDone = useMemo(() => Object.keys(progress).length, [progress])
-  const overallPct = TOTAL_QUESTIONS > 0
-    ? Math.round((totalDone / TOTAL_QUESTIONS) * 100)
-    : 0
+  /* Overall progress */
+  const totalDone  = useMemo(() => Object.keys(progress).length, [progress])
+  const overallPct = TOTAL_QUESTIONS > 0 ? Math.round((totalDone / TOTAL_QUESTIONS) * 100) : 0
 
   const isMac = navigator.platform?.toUpperCase().includes('MAC')
 
@@ -60,33 +62,44 @@ function HomePage() {
     <div className="home">
       <Header />
 
-      {/* ── Hero ──────────────────────────────────────── */}
+      {/* ══════════════════════════════════════
+          HERO
+         ══════════════════════════════════════ */}
       <section className="hero">
-        <div className="container">
+        {/* Background layers */}
+        <div className="hero__bg-grid"    aria-hidden="true" />
+        <div className="hero__bg-glow-1"  aria-hidden="true" />
+        <div className="hero__bg-glow-2"  aria-hidden="true" />
+
+        <div className="container hero__container">
+          {/* Badge */}
           <div className="hero__badge">
-            <Code2 size={13} />
-            <span>Free for developers</span>
+            <Sparkles size={12} />
+            <span>Free for every developer</span>
           </div>
 
+          {/* Headline */}
           <h1 className="hero__title">
             Ace Your Next
-            <span className="hero__title-accent"> Developer </span>
-            Interview
+            <span className="hero__title-gradient"> Tech Interview</span>
           </h1>
 
+          {/* Sub */}
           <p className="hero__subtitle">
-            Curated interview questions across {topics.length} topics with
-            in-depth answers. Track your progress as you prepare.
+            Curated questions across&nbsp;
+            <strong className="hero__subtitle-accent">{topics.length || '25+'} tech topics</strong>
+            &nbsp;with in-depth answers.&nbsp;
+            Track your progress as you prepare.
           </p>
 
           {/* Search */}
           <div className="hero__search-wrap">
-            <Search size={18} className="hero__search-icon" />
+            <Search size={17} className="hero__search-icon" aria-hidden="true" />
             <input
               ref={searchRef}
               className="hero__search"
               type="text"
-              placeholder="Search topics… e.g. React, Docker, Python"
+              placeholder="Search topics…  e.g. React, Docker, Python"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Search topics"
@@ -97,101 +110,118 @@ function HomePage() {
                 onClick={() => setSearchQuery('')}
                 aria-label="Clear search"
               >
-                ✕
+                <X size={13} />
               </button>
             ) : (
-              <kbd className="hero__search-kbd">
-                {isMac ? '⌘' : 'Ctrl'}K
-              </kbd>
+              <kbd className="hero__search-kbd">{isMac ? '⌘' : 'Ctrl'}K</kbd>
             )}
           </div>
 
-          {/* Stats */}
+          {/* Stats row */}
           <div className="hero__stats">
-            <div className="hero__stat-pill">
-              <BookOpen size={14} />
-              <strong>{topics.length}</strong> Topics
+            <div className="hero__stat">
+              <BookOpen size={15} className="hero__stat-icon" />
+              <span><strong>{topics.length || '25'}</strong> Topics</span>
             </div>
-            <div className="hero__stat-pill">
-              <Award size={14} />
-              <strong>{TOTAL_QUESTIONS}</strong> Questions
+            <div className="hero__stat-divider" aria-hidden="true" />
+            <div className="hero__stat">
+              <Zap size={15} className="hero__stat-icon hero__stat-icon--yellow" />
+              <span><strong>{TOTAL_QUESTIONS || '800'}+</strong> Questions</span>
             </div>
-            <div className="hero__stat-pill hero__stat-pill--green">
-              <TrendingUp size={14} />
-              <strong>100%</strong> Free
+            <div className="hero__stat-divider" aria-hidden="true" />
+            <div className="hero__stat hero__stat--green">
+              <TrendingUp size={15} className="hero__stat-icon" />
+              <span><strong>100%</strong> Free</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Overall Progress Banner ────────────────────── */}
+      {/* ══════════════════════════════════════
+          OVERALL PROGRESS BANNER
+         ══════════════════════════════════════ */}
       {totalDone > 0 && (
         <div className="progress-banner container">
-          <div className="progress-banner__info">
-            <TrendingUp size={16} />
-            <span>
+          <div className="progress-banner__left">
+            <div className="progress-banner__icon-wrap">
+              <TrendingUp size={14} />
+            </div>
+            <span className="progress-banner__text">
               <strong>{totalDone}</strong> of <strong>{TOTAL_QUESTIONS}</strong> questions completed
             </span>
           </div>
-          <div className="progress-banner__bar-wrap">
+          <div className="progress-banner__right">
             <div className="progress-banner__bar">
-              <div
-                className="progress-banner__fill"
-                style={{ width: `${overallPct}%` }}
-              />
+              <div className="progress-banner__fill" style={{ width: `${overallPct}%` }} />
             </div>
             <span className="progress-banner__pct">{overallPct}%</span>
           </div>
         </div>
       )}
 
-      {/* ── Topics ────────────────────────────────────── */}
+      {/* ══════════════════════════════════════
+          TOPICS SECTION
+         ══════════════════════════════════════ */}
       <main className="topics-section container">
-        {/* Category filter */}
-        <div className="category-tabs-wrap">
-          <div className="category-tabs" role="tablist">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                role="tab"
-                aria-selected={activeCategory === cat.id}
-                className={`category-tab ${activeCategory === cat.id ? 'category-tab--active' : ''}`}
-                onClick={() => setActiveCategory(cat.id)}
-              >
-                {cat.label}
-                {cat.id !== 'all' && (
-                  <span className="category-tab__count">
-                    {topics.filter((t) => t.category === cat.id).length}
-                  </span>
-                )}
-              </button>
-            ))}
+
+        {/* Category filter tabs */}
+        <div className="cat-tabs-wrap" role="tablist" aria-label="Filter topics by category">
+          <div className="cat-tabs">
+            {categories.map((cat) => {
+              const count = cat.id === 'all'
+                ? topics.length
+                : topics.filter((t) => t.category === cat.id).length
+              return (
+                <button
+                  key={cat.id}
+                  role="tab"
+                  aria-selected={activeCategory === cat.id}
+                  className={`cat-tab ${activeCategory === cat.id ? 'cat-tab--active' : ''}`}
+                  onClick={() => setActiveCategory(cat.id)}
+                >
+                  <span className="cat-tab__label">{cat.label}</span>
+                  <span className="cat-tab__count">{count}</span>
+                </button>
+              )
+            })}
           </div>
         </div>
 
-        {/* Section header row */}
-        <div className="topics-header">
-          <p className="topics-header__label">
-            {searchQuery ? (
-              filteredTopics.length === 0
+        {/* Section meta row */}
+        <div className="topics-meta">
+          <p className="topics-meta__label">
+            {searchQuery
+              ? filteredTopics.length === 0
                 ? `No results for "${searchQuery}"`
                 : `${filteredTopics.length} result${filteredTopics.length !== 1 ? 's' : ''} for "${searchQuery}"`
-            ) : (
-              <>Showing <strong>{filteredTopics.length}</strong> topic{filteredTopics.length !== 1 ? 's' : ''}</>
-            )}
+              : <>Showing <strong>{filteredTopics.length}</strong> topic{filteredTopics.length !== 1 ? 's' : ''}</>
+            }
           </p>
+          {(searchQuery || activeCategory !== 'all') && (
+            <button
+              className="topics-meta__clear"
+              onClick={() => { setSearchQuery(''); setActiveCategory('all') }}
+            >
+              <X size={11} /> Clear filters
+            </button>
+          )}
         </div>
 
         {/* Grid */}
         {topicsLoading ? (
-          <div className="topics-loading">Loading topics…</div>
+          <div className="topics-grid">
+            {Array.from({ length: 12 }).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
         ) : topicsError ? (
-          <div className="topics-error">Failed to load topics. Please try again.</div>
+          <div className="topics-error-state">
+            <div className="topics-error-state__icon">⚠</div>
+            <p className="topics-error-state__title">Failed to load topics</p>
+            <p className="topics-error-state__sub">Please check your connection and try again.</p>
+          </div>
         ) : filteredTopics.length > 0 ? (
           <div className="topics-grid">
             {filteredTopics.map((topic) => {
-              console.log('Rendering topic card:', topic)
-              const { done, total } = getTopicProgress([])
+              const { done } = getTopicProgress([])
               return (
                 <TopicCard
                   key={topic.id}
@@ -204,12 +234,10 @@ function HomePage() {
           </div>
         ) : (
           <div className="topics-empty">
-            <div className="topics-empty__icon">
-              <Search size={32} />
-            </div>
+            <div className="topics-empty__icon"><Search size={28} /></div>
             <p className="topics-empty__title">No topics found</p>
             <p className="topics-empty__sub">
-              Try a different keyword or{' '}
+              Try a different keyword or&nbsp;
               <button onClick={() => { setSearchQuery(''); setActiveCategory('all') }}>
                 clear filters
               </button>
@@ -218,7 +246,9 @@ function HomePage() {
         )}
       </main>
 
-      {/* ── Footer ────────────────────────────────────── */}
+      {/* ══════════════════════════════════════
+          FOOTER
+         ══════════════════════════════════════ */}
       <footer className="footer">
         <div className="container footer__inner">
           <span className="footer__logo">&lt;/&gt; Dev Interview Prep</span>
