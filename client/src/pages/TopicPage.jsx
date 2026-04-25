@@ -115,6 +115,8 @@ function TopicPage() {
   const { topics } = useTopics()
   const { questions, loading: questionsLoading, error: questionsError } = useQuestions(topicId)
 
+  console.log('TopicPage - topicId:', topicId, 'questions:', questions, 'loading:', questionsLoading, 'error:', questionsError)
+
   const [search,     setSearch]     = useState('')
   const [diffFilter, setDiffFilter] = useState('all')
 

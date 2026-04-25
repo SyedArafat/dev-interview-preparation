@@ -34,16 +34,19 @@ function HomePage() {
   }, [])
 
   const filteredTopics = useMemo(() => {
+    console.log('Filtering topics:', { topics, activeCategory, searchQuery })
     return topics
-      .filter((t) =>
-        activeCategory === 'all' ? true : t.category === activeCategory,
-      )
+      .filter((t) => {
+        // If activeCategory is 'all', show all. Otherwise filter by category if it exists
+        if (activeCategory === 'all') return true
+        return (t.category || 'other') === activeCategory
+      })
       .filter((t) =>
         searchQuery.trim()
           ? t.name.toLowerCase().includes(searchQuery.toLowerCase())
           : true,
       )
-  }, [activeCategory, searchQuery])
+  }, [topics, activeCategory, searchQuery])
 
   // Overall progress across all topics
   const totalDone = useMemo(() => Object.keys(progress).length, [progress])
@@ -187,7 +190,8 @@ function HomePage() {
         ) : filteredTopics.length > 0 ? (
           <div className="topics-grid">
             {filteredTopics.map((topic) => {
-              const { done, total } = getTopicProgress([], topic)
+              console.log('Rendering topic card:', topic)
+              const { done, total } = getTopicProgress([])
               return (
                 <TopicCard
                   key={topic.id}

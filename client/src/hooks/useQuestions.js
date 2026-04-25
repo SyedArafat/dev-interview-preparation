@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { collection, getDocs, query, where, orderBy } from 'firebase/firestore'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 
 export function useQuestions(topicId) {
@@ -14,15 +14,32 @@ export function useQuestions(topicId) {
     async function fetch() {
       setLoading(true)
       try {
+        console.log('Fetching questions for topicId:', topicId)
         const q    = query(
           collection(db, 'questions'),
           where('topicId', '==', topicId),
-          orderBy('order'),
         )
         const snap = await getDocs(q)
-        const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-        if (!cancelled) setQuestions(data)
+        console.log('Questions fetched:', snap.docs.length)
+        const data = snap.docs.map(doc => {
+          const docData = doc.data()
+          return {
+            id: doc.id,
+            question: docData.question || '',
+            difficulty: docData.difficulty || 'intermediate',
+            answer: docData.answer || '',
+            ...docData,
+          }
+        })
+        // Sort by priority on client side
+        data.sort((a, b) => (a.priority || 0) - (b.priority || 0))
+        
+        if (!cancelled) {
+          console.log('Questions processed:', data)
+          setQuestions(data)
+        }
       } catch (err) {
+        console.error('Error fetching questions:', err.message, err.code)
         if (!cancelled) setError(err)
       } finally {
         if (!cancelled) setLoading(false)
