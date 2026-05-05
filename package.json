@@ -1,5 +1,11 @@
 {
+  "scripts": {
+    "sync-counts": "node scripts/sync-question-counts.js"
+  },
   "dependencies": {
     "firebase": "^12.12.1"
+  },
+  "devDependencies": {
+    "firebase-admin": "^13.8.0"
   }
 }

@@ -26,7 +26,7 @@ export function useQuestions(topicId) {
           return {
             id: doc.id,
             question: docData.question || '',
-            difficulty: docData.difficulty || 'intermediate',
+            difficulty: (docData.difficulty || 'intermediate').toLowerCase(),
             answer: docData.answer || '',
             ...docData,
           }

@@ -25,7 +25,7 @@ export function useTopics() {
             title: docData.title || docData.name || '',
             category: docData.category || 'other',
             devicon: docData.icon || docData.devicon || '',
-            color: docData.color || '#6366f1',
+            color: docData.color ? (docData.color.startsWith('#') ? docData.color : `#${docData.color}`) : '#6366f1',
             questionsCount: docData.questionsCount || 0,
             ...docData,
           }
