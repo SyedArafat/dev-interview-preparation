@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { Sun, Moon, LogOut, ChevronDown } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Sun, Moon, LogOut, ChevronDown, UserCircle } from 'lucide-react'
 import { useTheme } from '../hooks/useTheme'
 import { useAuth } from '../contexts/AuthContext'
 import './Header.css'
@@ -29,6 +29,7 @@ function GoogleIcon() {
 function UserMenu({ user, signOut }) {
   const [open, setOpen] = useState(false)
   const ref             = useRef(null)
+  const navigate        = useNavigate()
 
   // Close on outside click
   useEffect(() => {
@@ -81,6 +82,17 @@ function UserMenu({ user, signOut }) {
               <span className="user-menu__email">{user.email}</span>
             </div>
           </div>
+
+          <div className="user-menu__divider" />
+
+          <button
+            className="user-menu__item"
+            role="menuitem"
+            onClick={() => { setOpen(false); navigate('/profile') }}
+          >
+            <UserCircle size={14} />
+            View Profile
+          </button>
 
           <div className="user-menu__divider" />
 

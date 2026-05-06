@@ -5,6 +5,7 @@ import AdminRoute from './components/AdminRoute'
 import HomePage from './pages/HomePage'
 import TopicPage from './pages/TopicPage'
 import LoginPage from './pages/LoginPage'
+import ProfilePage from './pages/ProfilePage'
 import AdminLayout from './pages/admin/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AddTopic from './pages/admin/AddTopic'
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/topic/:topicId" element={<TopicPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
 
         {/* Admin routes — guarded by AdminRoute */}
         <Route path="/admin" element={<AdminRoute />}>
