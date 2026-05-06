@@ -23,10 +23,26 @@ service cloud.firestore {
 
     // ── Users ────────────────────────────────────────────────
     // Users can read their own profile (needed for role check on login)
-    // No client writes — managed manually via Firebase Console
+    // Allow create so Google sign-in can auto-create the profile doc
     match /users/{uid} {
-      allow read:  if request.auth != null && request.auth.uid == uid;
-      allow write: if false;
+      allow read:   if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+                    && request.resource.data.role == 'user';
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ── Notes ────────────────────────────────────────────────
+    // Each note doc ID is `{userId}_{questionId}`
+    // Only the owner can read, write, or delete their own notes
+    match /notes/{noteId} {
+      allow read,  delete: if request.auth != null
+                           && resource.data.userId == request.auth.uid;
+      allow create:        if request.auth != null
+                           && request.resource.data.userId == request.auth.uid;
+      allow update:        if request.auth != null
+                           && resource.data.userId == request.auth.uid
+                           && request.resource.data.userId == request.auth.uid;
     }
   }
 }

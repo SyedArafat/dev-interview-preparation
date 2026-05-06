@@ -1,11 +1,12 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import {createContext, useContext, useEffect, useState} from 'react'
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut as firebaseSignOut,
 } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
-import { auth, db } from '../lib/firebase'
+import {doc, getDoc, serverTimestamp, setDoc} from 'firebase/firestore'
+import {auth, db, googleProvider} from '../lib/firebase'
 
 const AuthContext = createContext(null)
 
@@ -16,17 +17,28 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+    return onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser)
         try {
-          const snap = await getDoc(doc(db, 'users', firebaseUser.uid))
+          const ref = doc(db, 'users', firebaseUser.uid)
+          const snap = await getDoc(ref)
           if (snap.exists()) {
             const data = snap.data()
             setUserDoc(data)
             setRole(data.role || 'user')
           } else {
-            setUserDoc(null)
+            // Auto-create profile for Google sign-in users
+            const newDoc = {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName || '',
+              photoURL: firebaseUser.photoURL || '',
+              role: 'user',
+              createdAt: serverTimestamp(),
+            }
+            await setDoc(ref, newDoc)
+            setUserDoc(newDoc)
             setRole('user')
           }
         } catch {
@@ -40,14 +52,14 @@ export function AuthProvider({ children }) {
       }
       setLoading(false)
     })
-    return unsub
   }, [])
 
-  const signIn  = (email, password) => signInWithEmailAndPassword(auth, email, password)
-  const signOut = ()                 => firebaseSignOut(auth)
+  const signIn         = (email, password) => signInWithEmailAndPassword(auth, email, password)
+  const signInWithGoogle = ()              => signInWithPopup(auth, googleProvider)
+  const signOut        = ()                => firebaseSignOut(auth)
 
   return (
-    <AuthContext.Provider value={{ user, userDoc, role, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, userDoc, role, loading, signIn, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   )
@@ -56,4 +68,3 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext)
 }
-

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import Header from '../components/Header'
+import NoteEditor from '../components/NoteEditor'
 import { useTopics } from '../hooks/useTopics'
 import { useQuestions } from '../hooks/useQuestions'
 import { useProgress } from '../hooks/useProgress'
@@ -91,6 +92,10 @@ function QuestionItem({ question, index, isRead, onToggleRead }) {
           <div className="answer-body">
             <ReactMarkdown>{question.answer}</ReactMarkdown>
           </div>
+
+          {/* ── Personal Note ── */}
+          <NoteEditor questionId={question.id} />
+
           <div className="q-card__actions">
             <button
               className={`mark-btn ${isRead ? 'mark-btn--done' : ''}`}

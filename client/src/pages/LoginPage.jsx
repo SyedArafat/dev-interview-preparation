@@ -1,22 +1,37 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import './LoginPage.css'
 
 export default function LoginPage() {
-  const { signIn, user, role } = useAuth()
+  const { signIn, user, role, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
-  const [email, setEmail]       = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError]       = useState('')
-  const [loading, setLoading]   = useState(false)
+  const [email, setEmail]           = useState('')
+  const [password, setPassword]     = useState('')
+  const [error, setError]           = useState('')
+  const [loading, setLoading]       = useState(false)
+  const [pendingRedirect, setPendingRedirect] = useState(false)
 
-  // Already logged in as admin
-  if (user && role === 'admin') {
-    navigate('/admin', { replace: true })
-    return null
-  }
+  // Once auth+role is resolved after sign-in, redirect
+  useEffect(() => {
+    if (pendingRedirect && !authLoading) {
+      if (role === 'admin') {
+        navigate('/admin', { replace: true })
+      } else if (role !== null) {
+        setError('This account does not have admin access.')
+        setLoading(false)
+        setPendingRedirect(false)
+      }
+    }
+  }, [role, authLoading, pendingRedirect, navigate])
+
+  // Already logged in as admin — redirect immediately
+  useEffect(() => {
+    if (!authLoading && user && role === 'admin') {
+      navigate('/admin', { replace: true })
+    }
+  }, [user, role, authLoading, navigate])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -24,7 +39,8 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await signIn(email, password)
-      navigate('/admin', { replace: true })
+      // Don't navigate yet — wait for AuthContext to fetch role from Firestore
+      setPendingRedirect(true)
     } catch (err) {
       const messages = {
         'auth/user-not-found':      'No account found with this email.',
