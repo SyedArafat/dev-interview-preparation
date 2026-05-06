@@ -20,6 +20,7 @@ export function useTopics() {
           const docData = doc.data()
           console.log('Processing doc:', doc.id, docData)
           return {
+            ...docData,
             id: doc.id,
             name: docData.title || docData.name || '',
             title: docData.title || docData.name || '',
@@ -27,7 +28,6 @@ export function useTopics() {
             devicon: docData.icon || docData.devicon || '',
             color: docData.color ? (docData.color.startsWith('#') ? docData.color : `#${docData.color}`) : '#6366f1',
             questionsCount: docData.questionsCount || 0,
-            ...docData,
           }
         })
         if (!cancelled) {
