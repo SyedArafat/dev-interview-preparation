@@ -14,7 +14,7 @@ services:
       args:
         FE_FOLDER: ${DOCKER_VOLUME_CLIENT_ROOT_DIR:-client/}
     container_name: ${COMPOSE_CLIENT_PROJECT_NAME:-interview-questions}
-    platform: linux/amd64
+    platform: ${DOCKER_PLATFORM:-linux/arm64}  # override to linux/amd64 for x86 servers / CI
     ports:
       - "${WEB_HTTP_PUBLISH_PORT:-80}:80"
     restart: unless-stopped

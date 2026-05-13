@@ -10,6 +10,7 @@ services:
     # merge — some Compose versions don't reliably inherit build.target
     # when only one nested key is specified in the override file).
     image: ${COMPOSE_CLIENT_PROJECT_NAME:-interview-questions}_app:${DOCKER_BUILD_MODE:-development}
+    platform: linux/arm64          # ← native platform for Apple Silicon; avoids amd64 emulation warning
     build:
       context: ${DOCKER_BUILD_CONTEXT_DIR:-.}
       dockerfile: ./docker/client/Dockerfile
