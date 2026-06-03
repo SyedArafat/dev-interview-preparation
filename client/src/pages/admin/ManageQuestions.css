@@ -1,0 +1,14 @@
+/* ─────────────────────────────────────────────── */
+/* Manage Questions Search & Table Styles         */
+/* ─────────────────────────────────────────────── */
+
+@import './ManageTopics.css';
+
+/* Override column widths for questions table */
+.manage-table th:nth-child(1) { width: 35%; } /* Question */
+.manage-table th:nth-child(2) { width: 15%; } /* Topic */
+.manage-table th:nth-child(3) { width: 12%; } /* Difficulty */
+.manage-table th:nth-child(4) { width: 10%; } /* Priority */
+.manage-table th:nth-child(5) { width: 14%; } /* Created */
+.manage-table th:nth-child(6) { width: 14%; } /* Actions */
+

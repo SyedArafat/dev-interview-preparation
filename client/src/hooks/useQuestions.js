@@ -21,19 +21,21 @@ export function useQuestions(topicId) {
         )
         const snap = await getDocs(q)
         console.log('Questions fetched:', snap.docs.length)
-        const data = snap.docs.map(doc => {
-          const docData = doc.data()
-          return {
-            id: doc.id,
-            question: docData.question || '',
-            difficulty: (docData.difficulty || 'intermediate').toLowerCase(),
-            answer: docData.answer || '',
-            ...docData,
-          }
-        })
-        // Sort by priority on client side
-        data.sort((a, b) => (a.priority || 0) - (b.priority || 0))
-        
+         const data = snap.docs.map(doc => {
+           const docData = doc.data()
+           return {
+             id: doc.id,
+             question: docData.question || '',
+             difficulty: (docData.difficulty || 'intermediate').toLowerCase(),
+             answer: docData.answer || '',
+             ...docData,
+           }
+         })
+         // Filter out soft-deleted questions
+         .filter(q => !q.deletedAt)
+         // Sort by priority on client side
+         data.sort((a, b) => (a.priority || 0) - (b.priority || 0))
+
         if (!cancelled) {
           console.log('Questions processed:', data)
           setQuestions(data)

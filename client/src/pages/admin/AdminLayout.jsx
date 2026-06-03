@@ -1,13 +1,15 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, BookOpen, MessageSquarePlus, LogOut, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, BookOpen, MessageSquarePlus, LogOut, ChevronRight, Library, HelpCircle } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme } from '../../hooks/useTheme'
 import './AdminLayout.css'
 
 const NAV = [
-  { to: '/admin',               label: 'Dashboard',     icon: LayoutDashboard, end: true },
-  { to: '/admin/topics/new',    label: 'Add Topic',      icon: BookOpen },
-  { to: '/admin/questions/new', label: 'Add Question',   icon: MessageSquarePlus },
+  { to: '/admin',               label: 'Dashboard',       icon: LayoutDashboard, end: true },
+  { to: '/admin/topics',        label: 'Manage Topics',   icon: Library },
+  { to: '/admin/topics/new',    label: 'Add Topic',       icon: BookOpen },
+  { to: '/admin/questions',     label: 'Manage Questions', icon: HelpCircle },
+  { to: '/admin/questions/new', label: 'Add Question',    icon: MessageSquarePlus },
 ]
 
 export default function AdminLayout() {

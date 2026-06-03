@@ -30,11 +30,25 @@ export default function AdminDashboard() {
 
   const actions = [
     {
+      icon: Library,
+      label: 'Manage Topics',
+      description: 'View, edit, or delete existing topics. Search and filter through all your content.',
+      to: '/admin/topics',
+      accent: '#8b5cf6',
+    },
+    {
       icon: BookOpen,
       label: 'Add New Topic',
       description: 'Create a new technology topic card visible on the home page. Set the title, category, brand colour and Devicon icon.',
       to: '/admin/topics/new',
       accent: '#6366f1',
+    },
+    {
+      icon: HelpCircle,
+      label: 'Manage Questions',
+      description: 'View, edit, or delete existing questions. Search by topic, difficulty, or question text.',
+      to: '/admin/questions',
+      accent: '#06b6d4',
     },
     {
       icon: MessageSquarePlus,

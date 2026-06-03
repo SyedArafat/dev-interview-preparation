@@ -13,12 +13,16 @@ service cloud.firestore {
     match /topics/{topicId} {
       allow read:  if true;
       allow write: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();  // Soft delete: admin sets deletedAt field
     }
 
     // ── Questions ────────────────────────────────────────────
     match /questions/{questionId} {
       allow read:  if true;
       allow write: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();  // Soft delete: admin sets deletedAt field
     }
 
     // ── Users ────────────────────────────────────────────────

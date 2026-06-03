@@ -30,6 +30,8 @@ export function useTopics() {
             questionsCount: docData.questionsCount || 0,
           }
         })
+        // Filter out soft-deleted topics
+        .filter(topic => !topic.deletedAt)
         if (!cancelled) {
           console.log('Topics fetched successfully:', data)
           setTopics(data)
