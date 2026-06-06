@@ -46,7 +46,7 @@ export default function AdminDashboard() {
     {
       icon: HelpCircle,
       label: 'Manage Questions',
-      description: 'View, edit, or delete existing questions. Search by topic, difficulty, or question text.',
+      description: 'View questions by topic. Click any topic card to filter questions. Edit or delete questions.',
       to: '/admin/questions',
       accent: '#06b6d4',
     },

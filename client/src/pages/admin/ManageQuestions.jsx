@@ -1,50 +1,167 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getDocs, collection, query, orderBy } from 'firebase/firestore'
-import { ArrowLeft, Search, Edit2, Trash2, AlertCircle } from 'lucide-react'
+import { getDocs, collection, query, limit, orderBy, startAfter } from 'firebase/firestore'
+import { ArrowLeft, Search, Edit2, Trash2, AlertCircle, X, ChevronDown } from 'lucide-react'
 import { db } from '../../lib/firebase'
 import './ManageQuestions.css'
 
+// ─── CONFIG ──────────────────────────────────────
+const QUESTIONS_PER_PAGE = 100
+
 export default function ManageQuestions() {
   const navigate = useNavigate()
+  const [topics, setTopics] = useState([])
   const [questions, setQuestions] = useState([])
   const [filteredQuestions, setFilteredQuestions] = useState([])
+  const [selectedTopic, setSelectedTopic] = useState(null)
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(false)
+  const [lastDoc, setLastDoc] = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
+  const [isSearching, setIsSearching] = useState(false)
 
   useEffect(() => {
-    loadQuestions()
+    loadInitialData()
   }, [])
 
+  // Debounced search effect (backend search)
   useEffect(() => {
-    const filtered = questions.filter(q =>
-      q.question.toLowerCase().includes(search.toLowerCase()) ||
-      q.topicId.toLowerCase().includes(search.toLowerCase()) ||
-      q.difficulty.toLowerCase().includes(search.toLowerCase())
-    )
-    setFilteredQuestions(filtered)
+    const timer = setTimeout(() => {
+      if (search && search.length >= 2) {
+        performBackendSearch(search)
+      } else if (!selectedTopic) {
+        // No search, no filter - show loaded questions
+        let filtered = questions
+        filtered.sort((a, b) => (a.priority || 0) - (b.priority || 0))
+        setFilteredQuestions(filtered)
+        setIsSearching(false)
+      }
+    }, 300)
+
+    return () => clearTimeout(timer)
   }, [search, questions])
 
-  async function loadQuestions() {
+  // Filter effect for topic selection (client-side on loaded questions)
+  useEffect(() => {
+    if (!search && selectedTopic) {
+      let filtered = questions.filter(q => q.topicId === selectedTopic.id)
+      filtered.sort((a, b) => (a.priority || 0) - (b.priority || 0))
+      setFilteredQuestions(filtered)
+      console.log('Filtered by topic:', selectedTopic.id, 'Found:', filtered.length, 'questions')
+    } else if (!search && !selectedTopic) {
+      let filtered = [...questions]
+      filtered.sort((a, b) => (a.priority || 0) - (b.priority || 0))
+      setFilteredQuestions(filtered)
+    }
+  }, [selectedTopic, questions, search])
+
+  async function loadInitialData() {
     try {
       setLoading(true)
-      const snap = await getDocs(
-        query(collection(db, 'questions'), orderBy('topicId'), orderBy('priority'))
-      )
-      const data = snap.docs
-        .map(d => ({
-          id: d.id,
-          ...d.data(),
-        }))
-        .filter(q => !q.deletedAt) // Hide soft-deleted questions
-      setQuestions(data)
-      setFilteredQuestions(data)
+      const topicsSnap = await getDocs(collection(db, 'topics'))
+
+      const topicsData = topicsSnap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(t => !t.deletedAt)
+        .sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+      
+      setTopics(topicsData)
+
+      // Load first page of questions
+      await loadQuestions(true)
     } catch (err) {
-      console.error('Error loading questions:', err)
+      console.error('Error loading data:', err)
     } finally {
       setLoading(false)
     }
+  }
+
+  async function loadQuestions(isInitial = false) {
+    try {
+      if (!isInitial) setLoadingMore(true)
+
+      let q = query(
+        collection(db, 'questions'),
+        orderBy('topicId'),
+        limit(QUESTIONS_PER_PAGE)
+      )
+
+      // Pagination: start after last doc
+      if (!isInitial && lastDoc) {
+        q = query(
+          collection(db, 'questions'),
+          orderBy('topicId'),
+          startAfter(lastDoc),
+          limit(QUESTIONS_PER_PAGE)
+        )
+      }
+
+      const snap = await getDocs(q)
+
+      const newQuestions = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(q => !q.deletedAt)
+
+      // Update state
+      setQuestions(prev => isInitial ? newQuestions : [...prev, ...newQuestions])
+      setLastDoc(snap.docs[snap.docs.length - 1] || null)
+      setHasMore(snap.docs.length === QUESTIONS_PER_PAGE)
+    } catch (err) {
+      console.error('Error loading questions:', err)
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
+  async function performBackendSearch(searchTerm) {
+    try {
+      setIsSearching(true)
+
+      // Search across all questions (no limit when searching)
+      const q = query(
+        collection(db, 'questions'),
+        orderBy('topicId')
+      )
+
+      const snap = await getDocs(q)
+
+      const allQuestions = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(q => !q.deletedAt)
+
+      // Client-side text filter (Firestore doesn't support full-text search)
+      const filtered = allQuestions.filter(q =>
+        q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        q.topicId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        q.difficulty.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+
+      filtered.sort((a, b) => (a.priority || 0) - (b.priority || 0))
+      setFilteredQuestions(filtered)
+      console.log('Backend search for:', searchTerm, 'Found:', filtered.length, 'questions')
+    } catch (err) {
+      console.error('Error searching questions:', err)
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  function handleLoadMore() {
+    loadQuestions(false)
+  }
+
+  function handleTopicClick(topic) {
+    const newTopic = selectedTopic?.id === topic.id ? null : topic
+    setSelectedTopic(newTopic)
+    setSearch('') // Clear search when switching topics
+    console.log('Selected topic:', newTopic?.id, 'Questions with this topicId:', questions.filter(q => q.topicId === newTopic?.id).length)
+  }
+
+  function clearFilter() {
+    setSelectedTopic(null)
+    setSearch('')
   }
 
   function handleEdit(questionId) {
@@ -94,9 +211,47 @@ export default function ManageQuestions() {
         <div>
           <p className="form-page__eyebrow">Content Management</p>
           <h1 className="form-page__title">Manage Questions</h1>
-          <p className="form-page__sub">View, edit, or delete all questions.</p>
+          <p className="form-page__sub">
+            Click a topic to filter. Loaded {questions.length} questions
+            {hasMore && ` (load more available)`}
+          </p>
         </div>
       </div>
+
+      {/* Topics Grid */}
+      <div className="topics-grid-section">
+        <h3 className="section-title">Filter by Topic</h3>
+        <div className="topics-grid">
+          {topics.map(topic => (
+            <button
+              key={topic.id}
+              className={`topic-card ${selectedTopic?.id === topic.id ? 'topic-card--active' : ''}`}
+              onClick={() => handleTopicClick(topic)}
+            >
+              <div 
+                className="topic-card__bar" 
+                style={{ background: `#${topic.color}` }}
+              />
+              <div className="topic-card__content">
+                <span className="topic-card__title">{topic.title}</span>
+                <span className="topic-card__count">
+                  {questions.filter(q => q.topicId === topic.id).length} loaded
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Active filter badge */}
+      {selectedTopic && (
+        <div className="active-filter">
+          <span>Showing questions for: <strong>{selectedTopic.title}</strong></span>
+          <button className="filter-clear-btn" onClick={clearFilter} title="Clear filter">
+            <X size={16} />
+          </button>
+        </div>
+      )}
 
       {/* Search */}
       <div className="search-wrap">
@@ -104,11 +259,14 @@ export default function ManageQuestions() {
         <input
           type="text"
           className="search-wrap__input"
-          placeholder="Search by question, topic, or difficulty..."
+          placeholder="Search all questions (min 2 chars)..."
           value={search}
           onChange={e => setSearch(e.target.value)}
+          disabled={isSearching}
         />
-        <span className="search-wrap__count">{filteredQuestions.length} results</span>
+        <span className="search-wrap__count">
+          {isSearching ? 'Searching...' : `${filteredQuestions.length} results`}
+        </span>
       </div>
 
       {/* Delete confirmation modal */}
@@ -197,7 +355,30 @@ export default function ManageQuestions() {
           </table>
         </div>
       )}
+
+      {/* Load More button */}
+      {hasMore && !selectedTopic && !search && (
+        <div className="load-more-section">
+          <button
+            className="btn btn--ghost load-more-btn"
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+          >
+            {loadingMore ? (
+              <>
+                <span className="btn-spinner" /> Loading...
+              </>
+            ) : (
+              <>
+                Load More Questions <ChevronDown size={16} />
+              </>
+            )}
+          </button>
+          <p className="load-more-hint">
+            Showing {questions.length} questions. Click to load {QUESTIONS_PER_PAGE} more.
+          </p>
+        </div>
+      )}
     </div>
   )
 }
-

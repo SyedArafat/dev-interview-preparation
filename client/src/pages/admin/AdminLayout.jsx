@@ -5,11 +5,11 @@ import { useTheme } from '../../hooks/useTheme'
 import './AdminLayout.css'
 
 const NAV = [
-  { to: '/admin',               label: 'Dashboard',       icon: LayoutDashboard, end: true },
-  { to: '/admin/topics',        label: 'Manage Topics',   icon: Library },
-  { to: '/admin/topics/new',    label: 'Add Topic',       icon: BookOpen },
-  { to: '/admin/questions',     label: 'Manage Questions', icon: HelpCircle },
-  { to: '/admin/questions/new', label: 'Add Question',    icon: MessageSquarePlus },
+  { to: '/admin',               label: 'Dashboard',           icon: LayoutDashboard, end: true },
+  { to: '/admin/topics',        label: 'Manage Topics',       icon: Library },
+  { to: '/admin/topics/new',    label: 'Add Topic',           icon: BookOpen },
+  { to: '/admin/questions',     label: 'Manage Questions',    icon: HelpCircle },
+  { to: '/admin/questions/new', label: 'Add Question',        icon: MessageSquarePlus },
 ]
 
 export default function AdminLayout() {

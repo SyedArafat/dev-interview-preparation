@@ -1,0 +1,225 @@
+/* ─────────────────────────────────────────────── */
+/* Unified Content Management Styles               */
+/* ─────────────────────────────────────────────── */
+
+.content-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ─────────────────────────────────────────────── */
+/* Topic Item (collapsible)                        */
+/* ─────────────────────────────────────────────── */
+
+.content-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: box-shadow 0.15s ease;
+}
+
+.content-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.topic-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.topic-row:hover {
+  background: var(--bg-secondary);
+}
+
+.topic-expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.topic-expand-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.topic-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.topic-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius);
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.topic-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.topic-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topic-meta {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+.topic-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+/* ─────────────────────────────────────────────── */
+/* Questions Panel (expanded)                      */
+/* ─────────────────────────────────────────────── */
+
+.questions-panel {
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+}
+
+.empty-questions {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+}
+
+.empty-questions a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.questions-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-primary);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.questions-table thead {
+  background: var(--bg-card);
+}
+
+.questions-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+}
+
+.questions-table th:nth-child(1) { width: 50%; }
+.questions-table th:nth-child(2) { width: 20%; }
+.questions-table th:nth-child(3) { width: 15%; }
+.questions-table th:nth-child(4) { width: 15%; }
+
+.questions-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+}
+
+.questions-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.questions-table tbody tr:hover {
+  background: var(--bg-secondary);
+}
+
+.questions-table td {
+  padding: 0.875rem 1rem;
+  vertical-align: middle;
+}
+
+.q-text {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.q-priority {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.q-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* ─────────────────────────────────────────────── */
+/* Responsive                                      */
+/* ─────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .topic-row {
+    padding: 0.875rem 1rem;
+  }
+
+  .topic-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .topic-title {
+    font-size: 0.95rem;
+  }
+
+  .topic-meta {
+    font-size: 0.75rem;
+  }
+
+  .questions-panel {
+    padding: 1rem;
+    overflow-x: auto;
+  }
+
+  .questions-table {
+    min-width: 600px;
+  }
+
+  .questions-table th,
+  .questions-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
