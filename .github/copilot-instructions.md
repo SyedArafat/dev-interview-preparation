@@ -424,6 +424,33 @@ Reconciles `questionsCount` on every topic document by counting all questions in
 | Dashboard | `/admin` | Live counts + quick-action tiles |
 | Add Topic | `/admin/topics/new` | Title, slug (auto-derived, editable), category pills, hex color picker + live preview, Devicon class + live icon preview |
 | Add Question | `/admin/questions/new` | Topic dropdown, difficulty segmented control, priority input, question textarea, **split-pane Markdown editor** for answer |
+| Manage Topics | `/admin/topics` | Searchable table: edit/delete topics, shows all topic metadata |
+| Manage Questions | `/admin/questions` | Topic grid filter + searchable table: edit/delete questions, pagination, backend filtering |
+| Edit Topic | `/admin/topics/:topicId/edit` | Full form to update topic (slug is read-only) |
+| Edit Question | `/admin/questions/:questionId/edit` | Full form to update question with markdown editor |
+| Delete Topic | `/admin/topics/:topicId/delete` | Soft delete handler (sets `deletedAt` timestamp) |
+| Delete Question | `/admin/questions/:questionId/delete` | Soft delete handler + decrements topic's `questionsCount` |
+
+### Admin Panel Development
+
+**📘 For detailed admin panel documentation, see:** [`admin-panel-guide.md`](./admin-panel-guide.md)
+
+The separate guide includes:
+- Complete architecture overview & design decisions
+- Query strategies (avoiding composite indexes)
+- Search & pagination patterns with code examples
+- Soft delete implementation
+- Common issues & solutions (composite index errors, missing imports, etc.)
+- Best practices (debouncing, client-side sorting, count fetching)
+- Quick reference with reusable patterns
+- Development checklist
+
+**Quick notes:**
+- Topics/Questions use soft delete (`deletedAt` timestamp)
+- ManageQuestions uses two query strategies to avoid composite indexes
+- Pagination: 100 items per page (configurable `QUESTIONS_PER_PAGE`)
+- Search: 300ms debounce, min 2 characters
+- Always import: `where`, `getCountFromServer` from firebase/firestore
 
 ---
 
@@ -444,9 +471,6 @@ Reconciles `questionsCount` on every topic document by counting all questions in
 ### Profile Page (`/profile`)
 - **Left:** Avatar (editable URL), display name (inline edit), email, joined date, stats (notes + done count), sign out.
 - **Right → My Notes tab:** All notes grouped by question; topic badge, difficulty, question text (links to topic), expandable note content.
-
----
-
 ## Known Issues / TODOs
 
 - ✅ ~~Firestore rules wide open~~ — admin-only writes + owner-only notes.
@@ -478,5 +502,6 @@ Firebase MCP is configured at `~/.config/github-copilot/intellij/mcp.json`:
   }
 }
 ```
+
 
 `firebase experimental:mcp` starts a local MCP (Model Context Protocol) server that exposes Firebase tools — Firestore read/write, Auth management, rule deployment — to AI assistants like GitHub Copilot via stdio. This is how Copilot can directly query/modify Firestore from the editor.
