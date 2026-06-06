@@ -31,12 +31,12 @@ function App() {
         <Route path="/admin" element={<AdminRoute />}>
           <Route element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
-            <Route path="topics/new" element={<AddTopic />} />
             <Route path="topics" element={<ManageTopics />} />
+            <Route path="topics/new" element={<AddTopic />} />
             <Route path="topics/:topicId/edit" element={<EditTopic />} />
             <Route path="topics/:topicId/delete" element={<DeleteTopic />} />
-            <Route path="questions/new" element={<AddQuestion />} />
             <Route path="questions" element={<ManageQuestions />} />
+            <Route path="questions/new" element={<AddQuestion />} />
             <Route path="questions/:questionId/edit" element={<EditQuestion />} />
             <Route path="questions/:questionId/delete" element={<DeleteQuestion />} />
           </Route>
