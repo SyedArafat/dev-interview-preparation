@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getDocs, collection, query, limit, orderBy, startAfter } from 'firebase/firestore'
+import { getDocs, collection, query, limit, orderBy, startAfter, where, getCountFromServer } from 'firebase/firestore'
 import { ArrowLeft, Search, Edit2, Trash2, AlertCircle, X, ChevronDown } from 'lucide-react'
 import { db } from '../../lib/firebase'
 import './ManageQuestions.css'
@@ -21,6 +21,7 @@ export default function ManageQuestions() {
   const [lastDoc, setLastDoc] = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
   const [isSearching, setIsSearching] = useState(false)
+  const [totalCount, setTotalCount] = useState(0)
 
   useEffect(() => {
     loadInitialData()
@@ -78,24 +79,31 @@ export default function ManageQuestions() {
     }
   }
 
-  async function loadQuestions(isInitial = false) {
+  async function loadQuestions(isInitial = false, topicId = null) {
     try {
       if (!isInitial) setLoadingMore(true)
 
-      let q = query(
-        collection(db, 'questions'),
-        orderBy('topicId'),
-        limit(QUESTIONS_PER_PAGE)
-      )
+      let q
 
-      // Pagination: start after last doc
-      if (!isInitial && lastDoc) {
+      if (topicId) {
+        // Topic-specific query: fetch ALL questions for that topic (no pagination)
+        // Most topics won't have more than 100 questions anyway
         q = query(
           collection(db, 'questions'),
-          orderBy('topicId'),
-          startAfter(lastDoc),
-          limit(QUESTIONS_PER_PAGE)
+          where('topicId', '==', topicId)
         )
+      } else {
+        // All topics query: use pagination
+        const constraints = [
+          orderBy('topicId'),
+          limit(QUESTIONS_PER_PAGE)
+        ]
+
+        if (!isInitial && lastDoc) {
+          constraints.push(startAfter(lastDoc))
+        }
+
+        q = query(collection(db, 'questions'), ...constraints)
       }
 
       const snap = await getDocs(q)
@@ -104,10 +112,25 @@ export default function ManageQuestions() {
         .map(d => ({ id: d.id, ...d.data() }))
         .filter(q => !q.deletedAt)
 
+      // Sort client-side by priority
+      newQuestions.sort((a, b) => (a.priority || 0) - (b.priority || 0))
+
       // Update state
-      setQuestions(prev => isInitial ? newQuestions : [...prev, ...newQuestions])
-      setLastDoc(snap.docs[snap.docs.length - 1] || null)
-      setHasMore(snap.docs.length === QUESTIONS_PER_PAGE)
+      if (topicId) {
+        // Topic-specific: replace all questions (no append)
+        setQuestions(newQuestions)
+        setHasMore(false) // No pagination for topic-specific queries
+      } else {
+        // All topics: append for pagination
+        setQuestions(prev => isInitial ? newQuestions : [...prev, ...newQuestions])
+        setLastDoc(snap.docs[snap.docs.length - 1] || null)
+        setHasMore(snap.docs.length === QUESTIONS_PER_PAGE)
+      }
+
+      // Fetch total count for current filter
+      if (isInitial) {
+        await fetchTotalCount(topicId)
+      }
     } catch (err) {
       console.error('Error loading questions:', err)
     } finally {
@@ -115,16 +138,38 @@ export default function ManageQuestions() {
     }
   }
 
+  async function fetchTotalCount(topicId = null) {
+    try {
+      let countQuery
+      if (topicId) {
+        countQuery = query(
+          collection(db, 'questions'),
+          where('topicId', '==', topicId)
+        )
+      } else {
+        countQuery = collection(db, 'questions')
+      }
+
+      const snapshot = await getCountFromServer(countQuery)
+      setTotalCount(snapshot.data().count)
+    } catch (err) {
+      console.error('Error fetching count:', err)
+      setTotalCount(0)
+    }
+  }
+
   async function performBackendSearch(searchTerm) {
     try {
       setIsSearching(true)
 
-      // Search across all questions (no limit when searching)
-      const q = query(
-        collection(db, 'questions'),
-        orderBy('topicId')
-      )
+      // Build query with optional topic filter
+      let constraints = []
 
+      if (selectedTopic) {
+        constraints.push(where('topicId', '==', selectedTopic.id))
+      }
+
+      const q = query(collection(db, 'questions'), ...constraints)
       const snap = await getDocs(q)
 
       const allQuestions = snap.docs
@@ -140,7 +185,9 @@ export default function ManageQuestions() {
 
       filtered.sort((a, b) => (a.priority || 0) - (b.priority || 0))
       setFilteredQuestions(filtered)
-      console.log('Backend search for:', searchTerm, 'Found:', filtered.length, 'questions')
+
+      const scope = selectedTopic ? `${selectedTopic.title} questions` : 'all questions'
+      console.log(`Backend search for "${searchTerm}" in ${scope}:`, filtered.length, 'results')
     } catch (err) {
       console.error('Error searching questions:', err)
     } finally {
@@ -149,14 +196,25 @@ export default function ManageQuestions() {
   }
 
   function handleLoadMore() {
-    loadQuestions(false)
+    loadQuestions(false, selectedTopic?.id || null)
   }
 
-  function handleTopicClick(topic) {
+  async function handleTopicClick(topic) {
     const newTopic = selectedTopic?.id === topic.id ? null : topic
     setSelectedTopic(newTopic)
     setSearch('') // Clear search when switching topics
-    console.log('Selected topic:', newTopic?.id, 'Questions with this topicId:', questions.filter(q => q.topicId === newTopic?.id).length)
+
+    // Reset and load questions for the selected topic
+    setQuestions([])
+    setFilteredQuestions([])
+    setLastDoc(null)
+    setLoading(true)
+
+    await loadQuestions(true, newTopic?.id || null)
+    setLoading(false)
+
+    const scope = newTopic ? newTopic.title : 'all topics'
+    console.log(`Loaded questions for: ${scope}`)
   }
 
   function clearFilter() {
@@ -212,8 +270,17 @@ export default function ManageQuestions() {
           <p className="form-page__eyebrow">Content Management</p>
           <h1 className="form-page__title">Manage Questions</h1>
           <p className="form-page__sub">
-            Click a topic to filter. Loaded {questions.length} questions
-            {hasMore && ` (load more available)`}
+            {selectedTopic ? (
+              <>
+                Showing {questions.length} of {totalCount} {selectedTopic.title} questions
+                {hasMore && ` • Load more available`}
+              </>
+            ) : (
+              <>
+                Showing {questions.length} of {totalCount} questions
+                {hasMore && ` • Load more available`}
+              </>
+            )}
           </p>
         </div>
       </div>
@@ -235,7 +302,7 @@ export default function ManageQuestions() {
               <div className="topic-card__content">
                 <span className="topic-card__title">{topic.title}</span>
                 <span className="topic-card__count">
-                  {questions.filter(q => q.topicId === topic.id).length} loaded
+                  {topic.questionsCount || 0} questions
                 </span>
               </div>
             </button>
@@ -357,7 +424,7 @@ export default function ManageQuestions() {
       )}
 
       {/* Load More button */}
-      {hasMore && !selectedTopic && !search && (
+      {hasMore && !search && (
         <div className="load-more-section">
           <button
             className="btn btn--ghost load-more-btn"
@@ -375,7 +442,7 @@ export default function ManageQuestions() {
             )}
           </button>
           <p className="load-more-hint">
-            Showing {questions.length} questions. Click to load {QUESTIONS_PER_PAGE} more.
+            Showing {questions.length} of {totalCount} {selectedTopic ? selectedTopic.title : ''} questions
           </p>
         </div>
       )}
