@@ -97,6 +97,28 @@ dog.bark(); // 'woof'
 \`\`\`
 
 ES6 \`class\` syntax is syntactic sugar over prototypal inheritance.`),
+
+    q('js_6', 'What are callbacks in JavaScript?', 'beginner',
+`A **callback** is a function passed into another function to be executed later, usually after an asynchronous operation completes.
+
+Callbacks are commonly used for:
+- Handling async work such as timers, file reads, and API requests.
+- Reusing behaviour by passing custom logic into a function.
+- Responding to events like clicks, form submissions, and network responses.
+
+\`\`\`js
+function fetchData(url, callback) {
+  setTimeout(() => {
+    callback({ url, status: 'ok' })
+  }, 1000)
+}
+
+fetchData('/api/users', (result) => {
+  console.log('Done:', result)
+})
+\`\`\`
+
+Too many nested callbacks can lead to **callback hell**, so Promises and async/await are often preferred for complex async flows.`),
   ],
 
   // ── TypeScript ────────────────────────────────────────────────────
@@ -153,27 +175,7 @@ function format(val: StringOrNumber) { return String(val); }
 type Named = { name: string };
 type Aged  = { age: number };
 type Person = Named & Aged;  // must have both name and age
-\`\`\``),
-
-    q('ts_5', 'What are TypeScript decorators?', 'advanced',
-`**Decorators** are special functions that can be attached to classes, methods, properties, or parameters to add metadata or modify behaviour. They require \`"experimentalDecorators": true\` in \`tsconfig.json\`.
-
-\`\`\`ts
-function Log(target: any, key: string, descriptor: PropertyDescriptor) {
-  const original = descriptor.value;
-  descriptor.value = function (...args: any[]) {
-    console.log(\`Calling \${key} with\`, args);
-    return original.apply(this, args);
-  };
-  return descriptor;
-}
-
-class Service {
-  @Log
-  greet(name: string) { return \`Hello \${name}\`; }
-}
-\`\`\``),
-  ],
+\`\`\`\``),
 
   // ── React ─────────────────────────────────────────────────────────
   react: [
@@ -655,6 +657,106 @@ try {
 
 **3. EventEmitter \`'error'\` event:** Always attach an error listener on streams/emitters to prevent uncaught exceptions from crashing the process.`),
   ],
+
+
+        q('node_6', 'What is Node.js and what is NestJS?', 'beginner',
+    `**Node.js** is an open-source, cross-platform JavaScript runtime environment. It allows JavaScript to run outside the browser on servers and local machines.
+
+    Node.js itself is **not a framework** — it provides the runtime environment, not the application structure.
+
+    **NestJS** is a framework built on top of Node.js and TypeScript/JavaScript. It gives you architecture, modules, controllers, dependency injection, and opinionated patterns for building backend applications.
+
+    Think of it like this:
+
+    | Layer | PHP Stack | JavaScript Stack |
+    |---|---|---|
+    | Language | PHP | JavaScript / TypeScript |
+    | Runtime | PHP Zend Engine | Node.js / V8 |
+    | Framework | Laravel | NestJS |`),
+
+        q('node_7', 'How does Node.js work?', 'intermediate',
+    `Node.js works on a **single-threaded, event-driven architecture** powered by the V8 JavaScript engine and libuv.
+
+    1. **Main thread** — executes your JavaScript code and runs the event loop.
+    2. **libuv thread pool** — handles expensive or blocking tasks such as file system access, crypto, compression, and DNS lookups.
+    3. **Callback queues** — completed async work is queued and processed when the call stack is free.
+
+    Because the main thread never waits on slow I/O, Node.js can handle many concurrent requests efficiently.`),
+
+        q('node_8', 'What is the event loop?', 'intermediate',
+    `The **event loop** is the mechanism that lets Node.js process asynchronous work without blocking the main thread.
+
+    It continuously checks:
+    - **Call stack** — synchronous code currently running.
+    - **Callback queues** — completed async tasks waiting to run.
+
+    Typical order of work:
+    1. Run synchronous code.
+    2. Process **nextTick** and microtasks.
+    3. Handle timers and I/O callbacks.
+    4. Run check-phase callbacks like \\`setImmediate\\`.
+
+    This is what makes non-blocking I/O possible in Node.js.`),
+
+        q('node_9', 'What is the difference between synchronous and asynchronous functions?', 'beginner',
+    `| | **Synchronous** | **Asynchronous** |
+    |---|---|---|
+    | Execution | Blocks until the task completes | Continues running while waiting |
+    | Flow | One task at a time | Can schedule work and continue |
+    | Result | Returned immediately | Usually returned via callback, Promise, or async/await |
+    | Best for | Small, predictable tasks | I/O, network requests, timers, long-running operations |
+
+    ```js
+    // Synchronous
+    const value = calculate();
+
+    // Asynchronous
+    fetch('/api/data')
+      .then(res => res.json())
+      .then(data => console.log(data));
+    ```
+
+    Async code keeps Node responsive when work takes time.`),
+
+        q('node_10', 'What is the purpose of the require keyword in Node.js?', 'beginner',
+    `The **\`require\`** keyword loads modules in CommonJS.
+
+    It is used to import:
+    - Built-in modules like \\`http\\`, \\`fs\\`, and \\`path\\`.
+    - Third-party packages from \\`node_modules\\`.
+    - Local files in your project.
+
+    ```js
+    const http = require('http')
+    const express = require('express')
+    const helper = require('./helper')
+    ```
+
+    In modern Node.js, ES Modules (\`import\`) are also supported, but \\`require\\` remains common in existing codebases.`),
+
+        q('node_11', 'What is package.json in Node.js?', 'beginner',
+    `\`package.json\` is the manifest file for a Node.js project.
+
+    It typically stores:
+    - Project metadata such as name, version, and description.
+    - Dependencies and devDependencies.
+    - Scripts like \\`npm start\\` or \\`npm run build\\`.
+    - Entry points and runtime settings.
+
+    ```json
+    {
+      "name": "my-app",
+      "version": "1.0.0",
+      "scripts": {
+        "start": "node server.js"
+      },
+      "dependencies": {
+        "express": "^4.18.0"
+      }
+    }
+    ```
+
+    It is the main file npm uses to understand, install, and run your project.`),
 
   // ── Python ────────────────────────────────────────────────────────
   python: [

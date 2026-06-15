@@ -5,6 +5,9 @@ import {
   Search, X, Trophy, Target, Layers,
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeHighlight from 'rehype-highlight'
+import 'highlight.js/styles/atom-one-dark.css'
 import Header from '../components/Header'
 import NoteEditor from '../components/NoteEditor'
 import { useTopics } from '../hooks/useTopics'
@@ -87,11 +90,16 @@ function QuestionItem({ question, index, isRead, onToggleRead }) {
         </span>
       </button>
 
-      {open && (
-        <div className="q-card__body">
-          <div className="answer-body">
-            <ReactMarkdown>{question.answer}</ReactMarkdown>
-          </div>
+       {open && (
+         <div className="q-card__body">
+           <div className="answer-body">
+             <ReactMarkdown
+               remarkPlugins={[remarkGfm]}
+               rehypePlugins={[rehypeHighlight]}
+             >
+               {question.answer}
+             </ReactMarkdown>
+           </div>
 
           {/* ── Personal Note ── */}
           <NoteEditor questionId={question.id} />
