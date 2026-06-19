@@ -3,12 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { doc, runTransaction, serverTimestamp } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 
-export default function DeleteQuestion() {
+export default function RestoreQuestion() {
   const navigate = useNavigate()
   const { questionId } = useParams()
 
   useEffect(() => {
-    async function performDelete() {
+    async function performRestore() {
       try {
         await runTransaction(db, async (transaction) => {
           const questionRef = doc(db, 'questions', questionId)
@@ -17,7 +17,7 @@ export default function DeleteQuestion() {
 
           const qData = qSnap.data()
           const wasDeleted = Boolean(qData.deletedAt)
-          if (wasDeleted) return
+          if (!wasDeleted) return
 
           let topicRef = null
           let topicSnap = null
@@ -27,24 +27,27 @@ export default function DeleteQuestion() {
             topicSnap = await transaction.get(topicRef)
           }
 
-          transaction.update(questionRef, { deletedAt: serverTimestamp() })
+          transaction.update(questionRef, {
+            deletedAt: null,
+            restoredAt: serverTimestamp(),
+          })
 
           if (topicRef && topicSnap?.exists()) {
             const currentCount = Number(topicSnap.data().questionsCount || 0)
             transaction.update(topicRef, {
-              questionsCount: Math.max(0, currentCount - 1),
+              questionsCount: currentCount + 1,
             })
           }
         })
 
-        // Redirect back to questions list
         navigate('/admin/questions', { replace: true })
       } catch (err) {
-        console.error('Error deleting question:', err)
+        console.error('Error restoring question:', err)
         navigate('/admin/questions', { replace: true })
       }
     }
-    performDelete()
+
+    performRestore()
   }, [questionId, navigate])
 
   return null

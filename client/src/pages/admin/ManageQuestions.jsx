@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getDocs, collection, query, limit, orderBy, startAfter, where, getCountFromServer } from 'firebase/firestore'
-import { ArrowLeft, Search, Edit2, Trash2, AlertCircle, X, ChevronDown } from 'lucide-react'
+import { ArrowLeft, Search, Edit2, Trash2, AlertCircle, X, ChevronDown, RotateCcw } from 'lucide-react'
 import { db } from '../../lib/firebase'
 import './ManageQuestions.css'
 
@@ -110,7 +110,6 @@ export default function ManageQuestions() {
 
       const newQuestions = snap.docs
         .map(d => ({ id: d.id, ...d.data() }))
-        .filter(q => !q.deletedAt)
 
       // Sort client-side by priority
       newQuestions.sort((a, b) => (a.priority || 0) - (b.priority || 0))
@@ -174,7 +173,6 @@ export default function ManageQuestions() {
 
       const allQuestions = snap.docs
         .map(d => ({ id: d.id, ...d.data() }))
-        .filter(q => !q.deletedAt)
 
       // Client-side text filter (Firestore doesn't support full-text search)
       const filtered = allQuestions.filter(q =>
@@ -228,6 +226,10 @@ export default function ManageQuestions() {
 
   function handleDeleteClick(question) {
     setDeleteConfirm(question)
+  }
+
+  function handleRestoreClick(questionId) {
+    navigate(`/admin/questions/${questionId}/restore`)
   }
 
   async function confirmDelete() {
@@ -345,7 +347,7 @@ export default function ManageQuestions() {
             </div>
             <h2 className="modal__title">Delete Question?</h2>
             <p className="modal__text">
-              Soft delete: "<strong>{deleteConfirm.question.slice(0, 60)}…</strong>". It will be hidden but not permanently removed.
+              Soft delete: &quot;<strong>{deleteConfirm.question.slice(0, 60)}…</strong>&quot;. It will be hidden but not permanently removed.
             </p>
             <div className="modal__actions">
               <button className="btn btn--ghost" onClick={() => setDeleteConfirm(null)}>Cancel</button>
@@ -375,10 +377,11 @@ export default function ManageQuestions() {
             </thead>
             <tbody>
               {filteredQuestions.map(question => (
-                <tr key={question.id}>
+                <tr key={question.id} className={question.deletedAt ? 'row--deleted' : ''}>
                   <td>
                     <div className="table-cell-main">
-                      <span>{question.question.slice(0, 80)}…</span>
+                      <span className={question.deletedAt ? 'deleted-question-text' : ''}>{question.question.slice(0, 80)}…</span>
+                      {question.deletedAt && <span className="status-badge status-badge--deleted">Deleted</span>}
                     </div>
                   </td>
                   <td>
@@ -408,13 +411,23 @@ export default function ManageQuestions() {
                     >
                       <Edit2 size={16} />
                     </button>
-                    <button
-                      className="action-btn action-btn--delete"
-                      onClick={() => handleDeleteClick(question)}
-                      title="Delete question"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {question.deletedAt ? (
+                      <button
+                        className="action-btn action-btn--restore"
+                        onClick={() => handleRestoreClick(question.id)}
+                        title="Restore question"
+                      >
+                        <RotateCcw size={16} />
+                      </button>
+                    ) : (
+                      <button
+                        className="action-btn action-btn--delete"
+                        onClick={() => handleDeleteClick(question)}
+                        title="Delete question"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

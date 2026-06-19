@@ -14,13 +14,15 @@ export function useQuestions(topicId) {
     async function fetch() {
       setLoading(true)
       try {
-        console.log('Fetching questions for topicId:', topicId)
+        const isActiveQuestion = (question) => question.deletedAt == null
+
+        // Keep query on topicId only (no composite index dependency),
+        // then enforce active-only results in memory.
         const q    = query(
           collection(db, 'questions'),
           where('topicId', '==', topicId),
         )
         const snap = await getDocs(q)
-        console.log('Questions fetched:', snap.docs.length)
          const data = snap.docs.map(doc => {
            const docData = doc.data()
            return {
@@ -31,13 +33,11 @@ export function useQuestions(topicId) {
              ...docData,
            }
          })
-         // Filter out soft-deleted questions
-         .filter(q => !q.deletedAt)
+         .filter(isActiveQuestion)
          // Sort by priority on client side
          data.sort((a, b) => (a.priority || 0) - (b.priority || 0))
 
         if (!cancelled) {
-          console.log('Questions processed:', data)
           setQuestions(data)
         }
       } catch (err) {

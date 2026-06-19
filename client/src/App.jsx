@@ -16,6 +16,7 @@ import EditTopic from './pages/admin/EditTopic'
 import EditQuestion from './pages/admin/EditQuestion'
 import DeleteTopic from './pages/admin/DeleteTopic'
 import DeleteQuestion from './pages/admin/DeleteQuestion'
+import RestoreQuestion from './pages/admin/RestoreQuestion'
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="questions/new" element={<AddQuestion />} />
             <Route path="questions/:questionId/edit" element={<EditQuestion />} />
             <Route path="questions/:questionId/delete" element={<DeleteQuestion />} />
+            <Route path="questions/:questionId/restore" element={<RestoreQuestion />} />
           </Route>
         </Route>
       </Routes>
