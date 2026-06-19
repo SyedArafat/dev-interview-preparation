@@ -1,4 +1,4 @@
-e/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    TopicPage  ·  Professional / Elegant Redesign
    ═══════════════════════════════════════════════════════ */
 
@@ -465,12 +465,21 @@ e/* ═════════════════════════�
   to   { opacity: 1; transform: translateY(0); }
 }
 
-x.q-card__body .answer-body {
-  padding-top: 18px;
-  font-size: 0.93rem;
+.q-card__body .answer-body {
+  padding: 18px 18px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, rgba(99, 102, 241, 0.08), transparent 65%),
+    var(--bg-tag);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  font-size: 0.95rem;
   line-height: 1.7;
   color: var(--text-primary);
 }
+
+.answer-body > *:first-child { margin-top: 0; }
+.answer-body > *:last-child { margin-bottom: 0; }
 
 /* Headings */
 .answer-body h1,
@@ -482,6 +491,8 @@ x.q-card__body .answer-body {
   margin-top: 20px;
   margin-bottom: 12px;
   font-weight: 700;
+  font-family: var(--font-heading), system-ui, sans-serif;
+  letter-spacing: -0.015em;
   color: var(--text-primary);
 }
 
@@ -505,7 +516,7 @@ x.q-card__body .answer-body {
   padding: 2px 6px;
   background: var(--bg-tag);
   border-radius: 3px;
-  font-family: 'Fira Code', 'Monaco', 'Courier New', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: 0.88em;
   color: var(--accent-hover);
   font-weight: 500;
@@ -515,20 +526,25 @@ x.q-card__body .answer-body {
 .answer-body pre {
   margin: 18px 0;
   padding: 14px 18px;
-  background: #1e1e1e;
+  background: #111827;
   border-radius: var(--radius);
   overflow-x: auto;
   border: 1px solid var(--border);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28);
 }
 
 .answer-body pre code {
   background: none;
   padding: 0;
-  color: #e8e8e8;
+  color: #e5e7eb;
   font-size: 0.86em;
   line-height: 1.6;
-  font-family: 'Fira Code', 'Monaco', 'Courier New', monospace;
+  font-family: var(--font-mono), monospace;
+}
+
+[data-theme="light"] .answer-body pre {
+  background: #0f172a;
+  border-color: rgba(15, 23, 42, 0.16);
 }
 
 /* Syntax highlighting classes from highlight.js */

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@600;700;800&display=swap');
+
 /* ── Reset ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 img, svg { display: block; max-width: 100%; }
@@ -27,6 +29,7 @@ input, textarea { font-family: inherit; }
   --accent:         #6366f1;
   --accent-hover:   #818cf8;
   --accent-dim:     rgba(99, 102, 241, 0.15);
+  --error:          #ef4444;
 
   --green:          #10b981;
   --green-dim:      rgba(16, 185, 129, 0.12);
@@ -61,6 +64,7 @@ input, textarea { font-family: inherit; }
   --accent:         #6366f1;
   --accent-hover:   #4f46e5;
   --accent-dim:     rgba(99, 102, 241, 0.1);
+  --error:          #ef4444;
 
   --green:          #059669;
   --green-dim:      rgba(5, 150, 105, 0.1);
@@ -84,8 +88,9 @@ input, textarea { font-family: inherit; }
   --radius-full: 9999px;
   --transition:  0.18s ease;
   --topic-color: var(--accent);
-  --font:        'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-mono:   'Fira Code', 'Cascadia Code', Consolas, monospace;
+  --font:        'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading:'Sora', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:   'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
 }
 
 /* ── Base ──────────────────────────────────────────────── */
@@ -95,13 +100,15 @@ html {
 }
 
 body {
-  font-family: var(--font);
+  font-family: var(--font), system-ui, sans-serif;
   background: var(--bg-page);
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
@@ -112,7 +119,13 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
 /* ── Typography ────────────────────────────────────────── */
-h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; color: var(--text-primary); }
+h1, h2, h3, h4 {
+  line-height: 1.2;
+  font-weight: 700;
+  font-family: var(--font-heading), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
 
 /* ── Utility ───────────────────────────────────────────── */
 .container {
@@ -144,7 +157,7 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; color: var(--text-primary);
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 0.875em;
-  font-family: var(--font-mono);
+  font-family: var(--font-mono), monospace;
 }
 .answer-body pre {
   background: var(--code-bg);
