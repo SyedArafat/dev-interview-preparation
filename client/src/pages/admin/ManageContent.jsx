@@ -129,12 +129,19 @@ export default function ManageContent() {
       {/* Delete modal */}
       {deleteConfirm && (
         <div className="modal-overlay" onClick={() => setDeleteConfirm(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="content-delete-modal-title"
+            aria-describedby="content-delete-modal-description"
+            onClick={e => e.stopPropagation()}
+          >
             <div className="modal__icon" style={{ color: '#ef4444' }}>
               <AlertCircle size={32} />
             </div>
-            <h2 className="modal__title">Delete {deleteConfirm.type}?</h2>
-            <p className="modal__text">
+            <h2 className="modal__title" id="content-delete-modal-title">Delete {deleteConfirm.type}?</h2>
+            <p className="modal__text" id="content-delete-modal-description">
               Soft delete "<strong>
                 {deleteConfirm.type === 'topic'
                   ? deleteConfirm.item.title

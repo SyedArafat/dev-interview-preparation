@@ -20,6 +20,7 @@ export default function ManageQuestions() {
   const [hasMore, setHasMore] = useState(false)
   const [lastDoc, setLastDoc] = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
+  const [restoreConfirm, setRestoreConfirm] = useState(null)
   const [isSearching, setIsSearching] = useState(false)
   const [totalCount, setTotalCount] = useState(0)
 
@@ -228,8 +229,8 @@ export default function ManageQuestions() {
     setDeleteConfirm(question)
   }
 
-  function handleRestoreClick(questionId) {
-    navigate(`/admin/questions/${questionId}/restore`)
+  function handleRestoreClick(question) {
+    setRestoreConfirm(question)
   }
 
   async function confirmDelete() {
@@ -238,6 +239,15 @@ export default function ManageQuestions() {
       navigate(`/admin/questions/${deleteConfirm.id}/delete`)
     } catch (err) {
       console.error('Error deleting question:', err)
+    }
+  }
+
+  async function confirmRestore() {
+    if (!restoreConfirm) return
+    try {
+      navigate(`/admin/questions/${restoreConfirm.id}/restore`)
+    } catch (err) {
+      console.error('Error restoring question:', err)
     }
   }
 
@@ -341,17 +351,50 @@ export default function ManageQuestions() {
       {/* Delete confirmation modal */}
       {deleteConfirm && (
         <div className="modal-overlay" onClick={() => setDeleteConfirm(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="question-delete-modal-title"
+            aria-describedby="question-delete-modal-description"
+            onClick={e => e.stopPropagation()}
+          >
             <div className="modal__icon" style={{ color: '#ef4444' }}>
               <AlertCircle size={32} />
             </div>
-            <h2 className="modal__title">Delete Question?</h2>
-            <p className="modal__text">
+            <h2 className="modal__title" id="question-delete-modal-title">Delete Question?</h2>
+            <p className="modal__text" id="question-delete-modal-description">
               Soft delete: &quot;<strong>{deleteConfirm.question.slice(0, 60)}…</strong>&quot;. It will be hidden but not permanently removed.
             </p>
             <div className="modal__actions">
               <button className="btn btn--ghost" onClick={() => setDeleteConfirm(null)}>Cancel</button>
               <button className="btn btn--danger" onClick={confirmDelete}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Restore confirmation modal */}
+      {restoreConfirm && (
+        <div className="modal-overlay" onClick={() => setRestoreConfirm(null)}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="question-restore-modal-title"
+            aria-describedby="question-restore-modal-description"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="modal__icon modal__icon--restore">
+              <RotateCcw size={28} />
+            </div>
+            <h2 className="modal__title" id="question-restore-modal-title">Restore Question?</h2>
+            <p className="modal__text" id="question-restore-modal-description">
+              This will make &quot;<strong>{restoreConfirm.question.slice(0, 60)}…</strong>&quot; visible in the question list again.
+            </p>
+            <div className="modal__actions">
+              <button className="btn btn--ghost" onClick={() => setRestoreConfirm(null)}>Cancel</button>
+              <button className="btn btn--restore" onClick={confirmRestore}>Restore</button>
             </div>
           </div>
         </div>
@@ -414,7 +457,7 @@ export default function ManageQuestions() {
                     {question.deletedAt ? (
                       <button
                         className="action-btn action-btn--restore"
-                        onClick={() => handleRestoreClick(question.id)}
+                        onClick={() => handleRestoreClick(question)}
                         title="Restore question"
                       >
                         <RotateCcw size={16} />

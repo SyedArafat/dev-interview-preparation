@@ -2,6 +2,8 @@
 /* Unified Content Management Styles               */
 /* ─────────────────────────────────────────────── */
 
+@import './ManageTopics.css';
+
 .content-list {
   display: flex;
   flex-direction: column;

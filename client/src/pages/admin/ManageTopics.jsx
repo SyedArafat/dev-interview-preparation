@@ -101,12 +101,19 @@ export default function ManageTopics() {
       {/* Lock confirmation modal */}
       {deleteConfirm && (
         <div className="modal-overlay" onClick={() => setDeleteConfirm(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="topic-delete-modal-title"
+            aria-describedby="topic-delete-modal-description"
+            onClick={e => e.stopPropagation()}
+          >
             <div className="modal__icon" style={{ color: '#ef4444' }}>
               <AlertCircle size={32} />
             </div>
-            <h2 className="modal__title">Delete Topic?</h2>
-            <p className="modal__text">
+            <h2 className="modal__title" id="topic-delete-modal-title">Delete Topic?</h2>
+            <p className="modal__text" id="topic-delete-modal-description">
               Soft delete "<strong>{deleteConfirm.title}</strong>". It will be hidden but not permanently removed.
             </p>
             <div className="modal__actions">

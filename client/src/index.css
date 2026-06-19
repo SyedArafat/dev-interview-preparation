@@ -25,6 +25,7 @@ input, textarea { font-family: inherit; }
   --text-primary:   #f1f5f9;
   --text-secondary: #8b9ab5;
   --text-muted:     #4a5568;
+  --text-tertiary:  #4a5568;
 
   --accent:         #6366f1;
   --accent-hover:   #818cf8;
@@ -42,6 +43,11 @@ input, textarea { font-family: inherit; }
   --code-text:      #a8d8ea;
   --code-inline-bg: #131f38;
   --code-inline-text: #a5d6fb;
+
+  /* Legacy aliases used in some admin styles */
+  --bg-primary:     #0d1526;
+  --bg-secondary:   #111d38;
+  --bg-tertiary:    #121d35;
 }
 
 /* ── Light Theme ───────────────────────────────────────── */
@@ -60,6 +66,7 @@ input, textarea { font-family: inherit; }
   --text-primary:   #0f172a;
   --text-secondary: #475569;
   --text-muted:     #94a3b8;
+  --text-tertiary:  #94a3b8;
 
   --accent:         #6366f1;
   --accent-hover:   #4f46e5;
@@ -77,6 +84,11 @@ input, textarea { font-family: inherit; }
   --code-text:      #1e3a5f;
   --code-inline-bg: #e8eef8;
   --code-inline-text: #3730a3;
+
+  /* Legacy aliases used in some admin styles */
+  --bg-primary:     #ffffff;
+  --bg-secondary:   #eef2f9;
+  --bg-tertiary:    #f4f7ff;
 }
 
 /* ── Shared Tokens ─────────────────────────────────────── */
