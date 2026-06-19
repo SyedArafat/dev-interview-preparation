@@ -336,7 +336,7 @@ interview-questions/
         │       ├── AddQuestion.jsx  ← Form: topic dropdown, difficulty, priority, MD editor
         │       └── AddQuestion.css
         └── data/
-            ├── topics.js            ← Legacy static (categories array used for filter tabs)
+            ├── categories.js            ← Legacy static (categories array used for filter tabs)
             └── questions.js         ← Legacy static (not used at runtime)
 ```
 
@@ -479,7 +479,7 @@ The separate guide includes:
 - ✅ ~~`color` missing `#` prefix~~ — prepended in `useTopics.js`.
 - ✅ ~~No authentication~~ — Google OAuth + Email/Password implemented.
 - 📝 **"Get Pro" button** — disabled, "Coming Soon" badge. No premium tier yet.
-- 📝 **Static data files** (`data/questions.js`, `data/topics.js`) still in codebase. `categories` array from `topics.js` still used for filter tabs on home page.
+- 📝 **Static data files** (`data/questions.js`, `data/categories.js`) still in codebase. `categories` array from `categories.js` still used for filter tabs on home page.
 - 📝 **No question/topic editing or deletion** in admin panel — only add is implemented.
 - 📝 **`questionsCount` not decremented** on delete — no delete feature yet.
 - 📝 **Profile notes pagination** — no limit applied; may need pagination for users with many notes.

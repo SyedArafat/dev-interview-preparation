@@ -13,7 +13,7 @@ interview-questions/
 ├── client/                         # Vite 5 + React source
 │   ├── src/
 │   │   ├── components/             # Header, TopicCard
-│   │   ├── data/                   # topics.js, questions.js (dummy → Firebase later)
+│   │   ├── data/                   # categories.js, questions.js (dummy → Firebase later)
 │   │   ├── hooks/                  # useProgress (localStorage)
 │   │   └── pages/                  # HomePage, TopicPage
 │   └── vite.config.js
@@ -100,7 +100,7 @@ cd client && npm install && npm run dev
 ### Data Architecture
 
 ```
-topics.js       — id, name, category, devicon, color, questionsCount
+categories.js       — id, name, category, devicon, color, questionsCount
 questions.js    — { [topicId]: [{ id, question, difficulty, answer }] }
 useProgress.js  — localStorage read/write with React state sync
 ```
