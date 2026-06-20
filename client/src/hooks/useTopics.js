@@ -12,13 +12,10 @@ export function useTopics() {
 
     async function fetch() {
       try {
-        console.log('Starting to fetch topics from Firestore...')
         const snap   = await getDocs(collection(db, 'topics'))
-        console.log('Firestore response received, docs count:', snap.docs.length)
-        
+
         const data   = snap.docs.map(doc => {
           const docData = doc.data()
-          console.log('Processing doc:', doc.id, docData)
           return {
             ...docData,
             id: doc.id,
@@ -33,11 +30,9 @@ export function useTopics() {
         // Filter out soft-deleted topics
         .filter(topic => !topic.deletedAt)
         if (!cancelled) {
-          console.log('Topics fetched successfully:', data)
           setTopics(data)
         }
       } catch (err) {
-        console.error('Error fetching topics:', err.message, err.code)
         if (!cancelled) setError(err)
       } finally {
         if (!cancelled) setLoading(false)

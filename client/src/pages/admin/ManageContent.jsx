@@ -36,8 +36,7 @@ export default function ManageContent() {
       
       setTopics(topicsData)
       setAllQuestions(questionsData)
-    } catch (err) {
-      console.error('Error loading data:', err)
+    } catch {
     } finally {
       setLoading(false)
     }

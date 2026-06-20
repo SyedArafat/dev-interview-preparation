@@ -51,7 +51,6 @@ export default function ManageQuestions() {
       let filtered = questions.filter(q => q.topicId === selectedTopic.id)
       filtered.sort((a, b) => (a.priority || 0) - (b.priority || 0))
       setFilteredQuestions(filtered)
-      console.log('Filtered by topic:', selectedTopic.id, 'Found:', filtered.length, 'questions')
     } else if (!search && !selectedTopic) {
       let filtered = [...questions]
       filtered.sort((a, b) => (a.priority || 0) - (b.priority || 0))
@@ -73,8 +72,7 @@ export default function ManageQuestions() {
 
       // Load first page of questions
       await loadQuestions(true)
-    } catch (err) {
-      console.error('Error loading data:', err)
+    } catch {
     } finally {
       setLoading(false)
     }
@@ -131,8 +129,7 @@ export default function ManageQuestions() {
       if (isInitial) {
         await fetchTotalCount(topicId)
       }
-    } catch (err) {
-      console.error('Error loading questions:', err)
+    } catch {
     } finally {
       setLoadingMore(false)
     }
@@ -152,8 +149,7 @@ export default function ManageQuestions() {
 
       const snapshot = await getCountFromServer(countQuery)
       setTotalCount(snapshot.data().count)
-    } catch (err) {
-      console.error('Error fetching count:', err)
+    } catch {
       setTotalCount(0)
     }
   }
@@ -185,10 +181,7 @@ export default function ManageQuestions() {
       filtered.sort((a, b) => (a.priority || 0) - (b.priority || 0))
       setFilteredQuestions(filtered)
 
-      const scope = selectedTopic ? `${selectedTopic.title} questions` : 'all questions'
-      console.log(`Backend search for "${searchTerm}" in ${scope}:`, filtered.length, 'results')
-    } catch (err) {
-      console.error('Error searching questions:', err)
+    } catch {
     } finally {
       setIsSearching(false)
     }
@@ -212,8 +205,6 @@ export default function ManageQuestions() {
     await loadQuestions(true, newTopic?.id || null)
     setLoading(false)
 
-    const scope = newTopic ? newTopic.title : 'all topics'
-    console.log(`Loaded questions for: ${scope}`)
   }
 
   function clearFilter() {
@@ -237,8 +228,7 @@ export default function ManageQuestions() {
     if (!deleteConfirm) return
     try {
       navigate(`/admin/questions/${deleteConfirm.id}/delete`)
-    } catch (err) {
-      console.error('Error deleting question:', err)
+    } catch {
     }
   }
 
@@ -246,8 +236,7 @@ export default function ManageQuestions() {
     if (!restoreConfirm) return
     try {
       navigate(`/admin/questions/${restoreConfirm.id}/restore`)
-    } catch (err) {
-      console.error('Error restoring question:', err)
+    } catch {
     }
   }
 

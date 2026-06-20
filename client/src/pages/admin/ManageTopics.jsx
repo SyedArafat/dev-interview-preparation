@@ -40,8 +40,7 @@ export default function ManageTopics() {
         .filter(t => !t.deletedAt) // Hide soft-deleted topics
       setTopics(data)
       setFilteredTopics(data)
-    } catch (err) {
-      console.error('Error loading topics:', err)
+    } catch {
     } finally {
       setLoading(false)
     }
@@ -59,8 +58,7 @@ export default function ManageTopics() {
     if (!deleteConfirm) return
     try {
       navigate(`/admin/topics/${deleteConfirm.id}/delete`)
-    } catch (err) {
-      console.error('Error deleting topic:', err)
+    } catch {
     }
   }
 

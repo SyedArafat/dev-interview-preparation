@@ -41,8 +41,7 @@ export default function RestoreQuestion() {
         })
 
         navigate('/admin/questions', { replace: true })
-      } catch (err) {
-        console.error('Error restoring question:', err)
+      } catch {
         navigate('/admin/questions', { replace: true })
       }
     }

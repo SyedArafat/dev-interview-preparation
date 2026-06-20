@@ -41,7 +41,6 @@ export function useQuestions(topicId) {
           setQuestions(data)
         }
       } catch (err) {
-        console.error('Error fetching questions:', err.message, err.code)
         if (!cancelled) setError(err)
       } finally {
         if (!cancelled) setLoading(false)

@@ -39,8 +39,7 @@ export default function DeleteQuestion() {
 
         // Redirect back to questions list
         navigate('/admin/questions', { replace: true })
-      } catch (err) {
-        console.error('Error deleting question:', err)
+      } catch {
         navigate('/admin/questions', { replace: true })
       }
     }

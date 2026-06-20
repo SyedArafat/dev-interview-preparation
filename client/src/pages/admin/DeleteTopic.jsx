@@ -15,8 +15,7 @@ export default function DeleteTopic() {
         })
         // Redirect back to topics list
         navigate('/admin/topics', { replace: true })
-      } catch (err) {
-        console.error('Error deleting topic:', err)
+      } catch {
         navigate('/admin/topics', { replace: true })
       }
     }
